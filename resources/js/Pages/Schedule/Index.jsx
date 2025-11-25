@@ -104,14 +104,14 @@ export default function Schedule() {
                                                     <td className="px-4 py-2">{schedule.due_date}</td>
                                                     <td className="px-4 py-2">{schedule.time_notif}</td>
                                                     <td className="px-4 py-2">{schedule.status}</td>
-                                                    <td className="px-4 py-2 text-center space-x-2">
+                                                    <td className="px-4 py-2 text-center md:space-x-auto lg:space-x-2 space-y-1">
                                                         <button
                                                             key={schedule.id}
                                                             onClick={() => {
                                                                 setSelectedSchedule(schedule);
                                                                 setShowModal(true);
                                                             }}
-                                                            className="px-3 py-1 bg-yellow-500 text-white rounded"
+                                                            className="px-3 py-1 bg-yellow-500 text-white rounded w-20 h-8"
                                                         >
                                                             Edit
                                                         </button>
@@ -119,7 +119,7 @@ export default function Schedule() {
                                                             as="button"
                                                             method="delete"
                                                             href={route('schedules.destroy', schedule.id)}
-                                                            className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700"
+                                                            className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700 w-20 h-8"
                                                         >
                                                             Delete
                                                         </Link>

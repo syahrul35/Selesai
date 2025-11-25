@@ -1,7 +1,10 @@
+import Calendar from '@/Components/Calendar';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 
 export default function Dashboard() {
+    const { schedules } = usePage().props;
+    
     return (
         <AuthenticatedLayout
             header={
@@ -19,7 +22,13 @@ export default function Dashboard() {
                             You're logged in!
                         </div>
                     </div>
+                <div className='mt-4 mx-auto max-w-7xl sm:px-6 lg:px-8'>
+                    <Calendar 
+                        schedules={schedules}
+                    />
                 </div>
+                </div>
+
             </div>
         </AuthenticatedLayout>
     );

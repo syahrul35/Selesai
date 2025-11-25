@@ -128,7 +128,7 @@ class ScheduleController extends Controller
     {
         try {
             Schedule::destroy($id);
-    
+
             return redirect()
                 ->route('schedules.index')
                 ->with([
@@ -163,5 +163,25 @@ class ScheduleController extends Controller
                 'message' => 'Data berhasil diimport!'
             ]
         ]);
+    }
+
+    public function confirm(Schedule $schedule)
+    {
+        try {
+            $schedule->update([
+                'status' => 'done'
+            ]);
+
+            return back();
+        } catch (\Throwable $th) {
+            return redirect()
+                ->route('dashboard.index')
+                ->with([
+                    'message' => [
+                        'type' => 'failed',
+                        'message' => 'Failed to Confirm Schedule!' . $th
+                    ]
+                ]);
+        }
     }
 }
