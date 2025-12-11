@@ -16,7 +16,10 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::all();
+        $schedules = Schedule::where('user_id', Auth::id())
+            ->orderBy('due_date')
+            ->orderBy('time_notif')
+            ->get();
         return Inertia::render('Schedule/Index', [
             'schedules' => $schedules
         ]);

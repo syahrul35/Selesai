@@ -1,7 +1,7 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, usePage, Link, router } from '@inertiajs/react';
-import { useState } from 'react';
-import ScheduleModal from '../../Components/ScheduleModal';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, usePage, Link, router } from "@inertiajs/react";
+import { useState } from "react";
+import ScheduleModal from "../../Components/ScheduleModal";
 
 export default function Schedule() {
     const { schedules } = usePage().props;
@@ -20,18 +20,18 @@ export default function Schedule() {
         e.preventDefault();
 
         if (!file) {
-        alert("Pilih file Excel terlebih dahulu!");
-        return;
+            alert("Pilih file Excel terlebih dahulu!");
+            return;
         }
 
         const formData = new FormData();
         formData.append("file", file);
 
         router.post(route("schedules.import"), formData, {
-        forceFormData: true,
-        onSuccess: () => {
-            alert("Data berhasil diimport!");
-        },
+            forceFormData: true,
+            onSuccess: () => {
+                alert("Data berhasil diimport!");
+            },
         });
     };
 
@@ -49,7 +49,6 @@ export default function Schedule() {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
-
                             {/* Tombol Add */}
                             <div className="mb-4">
                                 <button
@@ -65,13 +64,18 @@ export default function Schedule() {
 
                             {/* Tombol Import */}
                             <div className="mb-4">
-                                <form onSubmit={handleSubmit} className="flex items-center gap-3">
+                                <form
+                                    onSubmit={handleSubmit}
+                                    className="flex items-center gap-3"
+                                >
                                     <label className="flex items-center px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-pointer hover:bg-gray-200 transition">
-                                        <span className="text-sm text-gray-700">📂 Pilih File</span>
-                                        <input 
-                                            type="file" 
-                                            accept=".xlsx,.xls,.csv" 
-                                            onChange={handleFileChange} 
+                                        <span className="text-sm text-gray-700">
+                                            📂 Pilih File
+                                        </span>
+                                        <input
+                                            type="file"
+                                            accept=".xlsx,.xls,.csv"
+                                            onChange={handleFileChange}
                                             className="hidden"
                                         />
                                     </label>
@@ -79,7 +83,7 @@ export default function Schedule() {
                                         type="submit"
                                         className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow-md transition"
                                     >
-                                    ⬆️ Import Excel
+                                        ⬆️ Import Excel
                                     </button>
                                 </form>
                             </div>
@@ -89,27 +93,53 @@ export default function Schedule() {
                                 <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-4 py-2 text-left">Title</th>
-                                            <th className="px-4 py-2 text-left">Due Date</th>
-                                            <th className="px-4 py-2 text-left">Time Notif</th>
-                                            <th className="px-4 py-2 text-left">Status</th>
-                                            <th className="px-4 py-2 text-center">Actions</th>
+                                            <th className="px-4 py-2 text-left">
+                                                Title
+                                            </th>
+                                            <th className="px-4 py-2 text-left">
+                                                Due Date
+                                            </th>
+                                            <th className="px-4 py-2 text-left">
+                                                Time Notif
+                                            </th>
+                                            <th className="px-4 py-2 text-left">
+                                                Status
+                                            </th>
+                                            <th className="px-4 py-2 text-center">
+                                                Actions
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
                                         {schedules.length > 0 ? (
                                             schedules.map((schedule) => (
                                                 <tr key={schedule.id}>
-                                                    <td className="px-4 py-2">{schedule.title}</td>
-                                                    <td className="px-4 py-2">{schedule.due_date}</td>
-                                                    <td className="px-4 py-2">{schedule.time_notif}</td>
-                                                    <td className="px-4 py-2">{schedule.status}</td>
+                                                    <td className="px-4 py-2">
+                                                        {schedule.title}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        {new Date(schedule.due_date).toLocaleDateString("id-ID", {
+                                                            year: "numeric",
+                                                            month: "short",
+                                                            day: "numeric"
+                                                        })}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        {schedule.time_notif}
+                                                    </td>
+                                                    <td className="px-4 py-2">
+                                                        {schedule.status}
+                                                    </td>
                                                     <td className="px-4 py-2 text-center md:space-x-auto lg:space-x-2 space-y-1">
                                                         <button
                                                             key={schedule.id}
                                                             onClick={() => {
-                                                                setSelectedSchedule(schedule);
-                                                                setShowModal(true);
+                                                                setSelectedSchedule(
+                                                                    schedule
+                                                                );
+                                                                setShowModal(
+                                                                    true
+                                                                );
                                                             }}
                                                             className="px-3 py-1 bg-yellow-500 text-white rounded w-20 h-8"
                                                         >
@@ -118,7 +148,10 @@ export default function Schedule() {
                                                         <Link
                                                             as="button"
                                                             method="delete"
-                                                            href={route('schedules.destroy', schedule.id)}
+                                                            href={route(
+                                                                "schedules.destroy",
+                                                                schedule.id
+                                                            )}
                                                             className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700 w-20 h-8"
                                                         >
                                                             Delete
@@ -146,7 +179,6 @@ export default function Schedule() {
                                 onClose={() => setShowModal(false)}
                                 schedule={selectedSchedule}
                             />
-
                         </div>
                     </div>
                 </div>
