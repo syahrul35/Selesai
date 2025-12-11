@@ -45,9 +45,10 @@ services:
       - .:/var/www/html
     command: sh -c "npm install && npm run dev"
     ports:
-      - "5173:5173"
+      - 5173:5173"
     networks:
       - laravel_net
+
 
 networks:
   laravel_net:
