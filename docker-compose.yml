@@ -37,6 +37,18 @@ services:
     volumes:
       - selesai_mysql:/var/lib/mysql
 
+  node:
+    image: node:20
+    container_name: selesai-vite
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"
+    networks:
+      - laravel_net
+
 networks:
   laravel_net:
 
