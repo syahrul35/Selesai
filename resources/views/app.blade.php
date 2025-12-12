@@ -15,7 +15,7 @@
         @if (app()->environment('local'))
             @viteReactRefresh
         @endif
-        @vite(['resources/js/app.jsx'])
+        {{-- @vite(['resources/js/app.jsx']) --}}
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
