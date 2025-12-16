@@ -148,6 +148,20 @@ export default function AuthenticatedLayout({ header, children }) {
                         >
                             Dashboard
                         </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('schedules.index')}
+                            active={route().current('schedules.index')}
+                        >
+                            Schedule
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
+                            href={route('setting.index')}
+                            active={route().current('setting.index')}
+                        >
+                            Setting
+                        </ResponsiveNavLink>
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">
