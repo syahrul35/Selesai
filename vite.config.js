@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
         server: {
             host: env.VITE_HOST || '0.0.0.0',
             port: 5173,
+            https: false,
+            cors: false,
             hmr: {
                 host: env.VITE_HMR_HOST || 'localhost',
             },
