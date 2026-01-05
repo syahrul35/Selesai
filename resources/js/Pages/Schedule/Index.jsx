@@ -4,7 +4,7 @@ import { useState } from "react";
 import ScheduleModal from "../../Components/ScheduleModal";
 
 export default function Schedule() {
-    const { schedules } = usePage().props;
+    const { schedules, month, year } = usePage().props;
 
     const [showModal, setShowModal] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -32,6 +32,16 @@ export default function Schedule() {
             onSuccess: () => {
                 alert("Data berhasil diimport!");
             },
+        });
+    };
+
+    const goToMonth = (newMonth, newYear) => {
+        router.get(route("schedules.index"), {
+            month: newMonth,
+            year: newYear,
+        }, {
+            preserveScroll: true,
+            preserveState: true,
         });
     };
 
@@ -88,6 +98,40 @@ export default function Schedule() {
                                 </form>
                             </div>
 
+                            {/* Pagination */}
+                            <div className="flex items-center justify-between mb-4">
+                                <button
+                                    onClick={() =>
+                                        goToMonth(
+                                            month === 1 ? 12 : month - 1,
+                                            month === 1 ? year - 1 : year
+                                        )
+                                    }
+                                    className="px-3 py-1 bg-gray-200 rounded"
+                                >
+                                    ← Prev
+                                </button>
+
+                                <div className="font-semibold">
+                                    {new Date(year, month - 1).toLocaleString("id-ID", {
+                                        month: "long",
+                                        year: "numeric",
+                                    })}
+                                </div>
+
+                                <button
+                                    onClick={() =>
+                                        goToMonth(
+                                            month === 12 ? 1 : month + 1,
+                                            month === 12 ? year + 1 : year
+                                        )
+                                    }
+                                    className="px-3 py-1 bg-gray-200 rounded"
+                                >
+                                    Next →
+                                </button>
+                            </div>
+
                             {/* Tabel */}
                             <div className="overflow-x-auto">
                                 <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
@@ -111,8 +155,8 @@ export default function Schedule() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {schedules.length > 0 ? (
-                                            schedules.map((schedule) => (
+                                        {schedules.data.length > 0 ? (
+                                            schedules.data.map((schedule) => (
                                                 <tr key={schedule.id}>
                                                     <td className="px-4 py-2">
                                                         {schedule.title}
@@ -171,6 +215,23 @@ export default function Schedule() {
                                         )}
                                     </tbody>
                                 </table>
+                            </div>
+
+                            {/* Pagination Links */}
+                            <div className="mt-4 flex flex-wrap gap-1">
+                                {schedules.links.map((link, index) => (
+                                    <button
+                                        key={index}
+                                        disabled={!link.url}
+                                        onClick={() => router.get(link.url)}
+                                        className={`px-3 py-1 border rounded text-sm ${
+                                            link.active
+                                                ? "bg-blue-600 text-white"
+                                                : "bg-white text-gray-700 hover:bg-gray-100"
+                                        }`}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                    />
+                                ))}
                             </div>
 
                             {/* Modal */}

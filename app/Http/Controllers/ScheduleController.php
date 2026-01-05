@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Imports\ScheduleImport;
 use App\Models\Schedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -14,14 +15,25 @@ class ScheduleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $month = (int) $request->get('month', now()->month);
+        $year  = (int) $request->get('year', now()->year);
+
+        $start = Carbon::create($year, $month)->startOfMonth();
+        $end   = Carbon::create($year, $month)->endOfMonth();
+        
         $schedules = Schedule::where('user_id', Auth::id())
+            ->whereBetween('due_date', [$start, $end])
             ->orderBy('due_date')
             ->orderBy('time_notif')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
+
         return Inertia::render('Schedule/Index', [
-            'schedules' => $schedules
+            'schedules' => $schedules,
+            'month' => $month,
+            'year' => $year,
         ]);
     }
 
