@@ -43,7 +43,7 @@ export default function Schedule() {
             preserveScroll: true,
             preserveState: true,
         });
-    };
+    }; 
 
     return (
         <AuthenticatedLayout
