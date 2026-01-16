@@ -41,7 +41,7 @@ export default function Schedule() {
             year: newYear,
         }, {
             preserveScroll: true,
-            preserveState: true,
+            preserveState: true, 
         });
     };
 
