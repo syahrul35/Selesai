@@ -44,6 +44,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: selesai
+      MYSQL_USER: selesai
+      MYSQL_PASSWORD: selesai123
     ports:
       - "3306:3306"
     networks:
