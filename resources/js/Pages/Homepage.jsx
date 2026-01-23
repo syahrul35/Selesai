@@ -67,7 +67,7 @@ export default function Homepage() {
           {/* Stats */}
           <div className="mt-12 flex flex-wrap gap-8">
             <div>
-              <div className="text-2xl font-bold text-blue-600">98%</div>
+              <div className="text-2xl font-bold text-blue-600">99%</div>
               <div className="text-sm text-slate-500">Ketepatan waktu</div>
             </div>
             <div>
