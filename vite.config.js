@@ -8,9 +8,9 @@ export default defineConfig({
         react(),
     ],
     server: {
-        host: "72.61.214.176",
+        host: "72.61.214.176:8081",
         https: false,
         cors: false,
-        hmr: { host: "72.61.214.176" },
+        hmr: { host: "72.61.214.176:8081" },
     },
 });
