@@ -8,9 +8,9 @@ export default defineConfig({
         react(),
     ],
     server: {
-        host: "72.61.214.176:8081",
-        https: false,
+        host: "https://selesai.syahrulmaulana.cloud",
+        https: true,
         cors: false,
-        hmr: { host: "72.61.214.176:8081" },
+        hmr: { host: "https://selesai.syahrulmaulana.cloud" },
     },
 });
