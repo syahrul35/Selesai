@@ -96,7 +96,7 @@ export default function Homepage() {
               Subject: Pengingat — Submit Proposal
             </div>
             <div className="space-y-4 text-slate-700">
-              <p>Hai Jokowi,</p>
+              <p>Hai Gibran,</p>
               <p>
                 Ini pengingat untuk jadwal:
               </p>
