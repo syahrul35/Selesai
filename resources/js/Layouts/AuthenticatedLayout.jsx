@@ -32,8 +32,8 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </NavLink>
 
                                 <NavLink
-                                    href={route('schedules.index')}
-                                    active={route().current('schedules.index')}
+                                    href={route('tasks.index')}
+                                    active={route().current('tasks.index')}
                                 >
                                     Schedule
                                 </NavLink>
@@ -150,8 +150,8 @@ export default function AuthenticatedLayout({ header, children }) {
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
-                            href={route('schedules.index')}
-                            active={route().current('schedules.index')}
+                            href={route('tasks.index')}
+                            active={route().current('tasks.index')}
                         >
                             Schedule
                         </ResponsiveNavLink>

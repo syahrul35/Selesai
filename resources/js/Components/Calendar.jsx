@@ -6,7 +6,7 @@ import { router, usePage } from "@inertiajs/react";
 dayjs.extend(isToday);
 
 const Calendar = ({ transactions = [], categories = [] }) => {
-    const { schedules } = usePage().props;
+    const { tasks } = usePage().props;
 
     const [viewDate, setViewDate] = useState(dayjs());
 
@@ -45,10 +45,10 @@ const Calendar = ({ transactions = [], categories = [] }) => {
     const shiftMonth = (amount) => setViewDate(viewDate.add(amount, "month"));
     const reset = () => setViewDate(dayjs());
 
-    const getSchedulesByDate = (date) => {
+    const gettasksByDate = (date) => {
         const dateString = date.format("YYYY-MM-DD");
 
-        return schedules.filter((s) => {
+        return tasks.filter((s) => {
             const scheduleDate = dayjs(s.due_date).format("YYYY-MM-DD");
             return scheduleDate === dateString;
         });
@@ -56,7 +56,7 @@ const Calendar = ({ transactions = [], categories = [] }) => {
 
     const onConfirmSchedule = (id) => {
         router.post(
-            `/schedules/${id}/confirm`,
+            `/tasks/${id}/confirm`,
             {},
             {
                 onSuccess: () => {
@@ -126,7 +126,7 @@ const Calendar = ({ transactions = [], categories = [] }) => {
                         <div key={p}></div>
                     ))}
                     {units.map((d) => {
-                        const daySchedules = getSchedulesByDate(d);
+                        const daytasks = gettasksByDate(d);
                         return (
                             <div
                                 key={d.format("YYYY-MM-DD")}
@@ -143,12 +143,12 @@ const Calendar = ({ transactions = [], categories = [] }) => {
                                 </div>
 
                                 <div className="flex flex-col overflow-y-auto text-xs mt-1 space-y-1">
-                                    {daySchedules.length === 0 ? (
+                                    {daytasks.length === 0 ? (
                                         <div className="text-gray-400 text-center">
                                             No schedule
                                         </div>
                                     ) : (
-                                        daySchedules.map((s) => (
+                                        daytasks.map((s) => (
                                             <div
                                                 key={s.id}
                                                 className={`p-1 ${s.status === 'done' ? 'bg-emerald-200' : 'bg-blue-50'} rounded border`}

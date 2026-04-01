@@ -15,7 +15,7 @@ class SendScheduleNotifications extends Command
      *
      * @var string
      */
-    protected $signature = 'schedules:send-reminders';
+    protected $signature = 'tasks:send-reminders';
 
     /**
      * The console command description.
@@ -32,15 +32,15 @@ class SendScheduleNotifications extends Command
         $now = now();
         $this->info("Running command at: " . $now);
 
-        $schedules = Schedule::where('is_notified', false)
+        $tasks = Schedule::where('is_notified', false)
             ->whereDate('due_date', $now->toDateString())
             ->whereTime('time_notif', '<=', $now->toTimeString())
             ->with('user')
             ->get();
 
-        $this->info("Found " . $schedules->count() . " schedule.");
+        $this->info("Found " . $tasks->count() . " schedule.");
 
-        foreach ($schedules as $schedule) {
+        foreach ($tasks as $schedule) {
             if ($schedule->user && $schedule->user->email) {
                 Mail::to($schedule->user->email)->send(new ScheduleNotificationMail($schedule));
                 $schedule->update([

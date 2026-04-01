@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Schedule;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -14,10 +14,10 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $schedules = Schedule::where('user_id', Auth::id())
+        $tasks = Task::where('user_id', Auth::id())
             ->get();
         return Inertia::render('Dashboard', [
-            'schedules' => $schedules
+            'tasks' => $tasks
         ]);
     }
 

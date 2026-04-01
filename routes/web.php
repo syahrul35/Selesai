@@ -18,9 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('dashboard', DashboardController::class);
-    Route::resource('schedules', ScheduleController::class);
-    Route::post('/schedules/import', [ScheduleController::class, 'import'])->name('schedules.import');
-    Route::post('/schedules/{schedule}/confirm', [ScheduleController::class, 'confirm'])->name('schedules.confirm');
+    Route::resource('tasks', ScheduleController::class);
+    Route::post('/tasks/import', [ScheduleController::class, 'import'])->name('tasks.import');
+    Route::post('/tasks/{schedule}/confirm', [ScheduleController::class, 'confirm'])->name('tasks.confirm');
     Route::resource('setting', SettingController::class);
 });
 

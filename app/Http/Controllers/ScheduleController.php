@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ScheduleImport;
-use App\Models\Schedule;
+use App\Imports\TaskImport;
+use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,15 +23,15 @@ class ScheduleController extends Controller
         $start = Carbon::create($year, $month)->startOfMonth();
         $end   = Carbon::create($year, $month)->endOfMonth();
         
-        $schedules = Schedule::where('user_id', Auth::id())
+        $tasks = Task::where('user_id', Auth::id())
             ->whereBetween('due_date', [$start, $end])
             ->orderBy('due_date')
             ->orderBy('time_notif')
             ->paginate(10)
             ->withQueryString();
 
-        return Inertia::render('Schedule/Index', [
-            'schedules' => $schedules,
+        return Inertia::render('Task/Index', [
+            'tasks' => $tasks,
             'month' => $month,
             'year' => $year,
         ]);
@@ -61,23 +61,23 @@ class ScheduleController extends Controller
         try {
             $validate['user_id'] = Auth::id();
 
-            Schedule::create($validate);
+            Task::create($validate);
 
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'success',
-                        'message' => 'Schedule Created Successfully!'
+                        'message' => 'Task Created Successfully!'
                     ]
                 ]);
         } catch (\Throwable $th) {
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'failed',
-                        'message' => 'Schedule Failed to Create!' . $th
+                        'message' => 'Task Failed to Create!' . $th
                     ]
                 ]);
         }
@@ -113,24 +113,24 @@ class ScheduleController extends Controller
         ]);
 
         try {
-            $schedule = Schedule::findOrFail($id);
-            $schedule->update($validate);
+            $task = Task::findOrFail($id);
+            $task->update($validate);
 
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'success',
-                        'message' => 'Schedule Updated Successfully!'
+                        'message' => 'Task Updated Successfully!'
                     ]
                 ]);
         } catch (\Throwable $th) {
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'failed',
-                        'message' => 'Failed to Update Schedule!' . $th
+                        'message' => 'Failed to Update Task!' . $th
                     ]
                 ]);
         }
@@ -142,23 +142,23 @@ class ScheduleController extends Controller
     public function destroy(string $id)
     {
         try {
-            Schedule::destroy($id);
+            Task::destroy($id);
 
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'success',
-                        'message' => 'Schedule Deleted Successfully!'
+                        'message' => 'Task Deleted Successfully!'
                     ]
                 ]);
         } catch (\Throwable $th) {
             return redirect()
-                ->route('schedules.index')
+                ->route('tasks.index')
                 ->with([
                     'message' => [
                         'type' => 'failed',
-                        'message' => 'Schedule Failed to Delete!' . $th
+                        'message' => 'Task Failed to Delete!' . $th
                     ]
                 ]);
         }
@@ -170,9 +170,9 @@ class ScheduleController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv',
         ]);
 
-        Excel::import(new ScheduleImport, $request->file('file'));
+        Excel::import(new TaskImport, $request->file('file'));
 
-        return redirect()->route('schedules.index')->with([
+        return redirect()->route('tasks.index')->with([
             'message' => [
                 'type' => 'success',
                 'message' => 'Data berhasil diimport!'
@@ -180,10 +180,10 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function confirm(Schedule $schedule)
+    public function confirm(Task $task)
     {
         try {
-            $schedule->update([
+            $task->update([
                 'status' => 'done'
             ]);
 
@@ -194,7 +194,7 @@ class ScheduleController extends Controller
                 ->with([
                     'message' => [
                         'type' => 'failed',
-                        'message' => 'Failed to Confirm Schedule!' . $th
+                        'message' => 'Failed to Confirm Task!' . $th
                     ]
                 ]);
         }

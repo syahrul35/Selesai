@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage } from '@inertiajs/react';
 
 export default function Dashboard() {
-    const { schedules } = usePage().props;
+    const { tasks } = usePage().props;
     
     return (
         <AuthenticatedLayout
@@ -24,7 +24,7 @@ export default function Dashboard() {
                     </div>
                 <div className='mt-4 mx-auto max-w-7xl sm:px-6 lg:px-8'>
                     <Calendar 
-                        schedules={schedules}
+                        tasks={tasks}
                     />
                 </div>
                 </div>

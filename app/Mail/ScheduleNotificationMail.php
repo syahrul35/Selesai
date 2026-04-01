@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Schedule;
+use App\Models\Task;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -14,14 +14,14 @@ class ScheduleNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $schedule;
+    public $task;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Schedule $schedule)
+    public function __construct(Task $task)
     {
-         $this->schedule = $schedule;
+         $this->task = $task;
     }
 
     /**
@@ -30,7 +30,7 @@ class ScheduleNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reminder: ' . $this->schedule->title,
+            subject: 'Reminder: ' . $this->task->title,
         );
     }
 
@@ -40,9 +40,9 @@ class ScheduleNotificationMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.schedule_notification',
+            view: 'emails.task_notification',
             with: [
-                'schedule' => $this->schedule,
+                'task' => $this->task,
             ],
         );
     }

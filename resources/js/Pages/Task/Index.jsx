@@ -1,10 +1,10 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, Link, router } from "@inertiajs/react";
 import { useState } from "react";
-import ScheduleModal from "../../Components/ScheduleModal";
+import ScheduleModal from "../../Components/TaskModal";
 
-export default function Schedule() {
-    const { schedules, month, year } = usePage().props;
+export default function Task() {
+    const { tasks, month, year } = usePage().props;
 
     const [showModal, setShowModal] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null);
@@ -27,7 +27,7 @@ export default function Schedule() {
         const formData = new FormData();
         formData.append("file", file);
 
-        router.post(route("schedules.import"), formData, {
+        router.post(route("tasks.import"), formData, {
             forceFormData: true,
             onSuccess: () => {
                 alert("Data berhasil diimport!");
@@ -36,7 +36,7 @@ export default function Schedule() {
     };
 
     const goToMonth = (newMonth, newYear) => {
-        router.get(route("schedules.index"), {
+        router.get(route("tasks.index"), {
             month: newMonth,
             year: newYear,
         }, {
@@ -49,11 +49,11 @@ export default function Schedule() {
         <AuthenticatedLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Schedule
+                    Task
                 </h2>
             }
         >
-            <Head title="Schedule" />
+            <Head title="Task" />
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -68,7 +68,7 @@ export default function Schedule() {
                                     }}
                                     className="px-4 py-2 bg-blue-600 text-white rounded"
                                 >
-                                    + Add Schedule
+                                    + Add Task
                                 </button>
                             </div>
 
@@ -155,31 +155,31 @@ export default function Schedule() {
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-100">
-                                        {schedules.data.length > 0 ? (
-                                            schedules.data.map((schedule) => (
-                                                <tr key={schedule.id}>
+                                        {tasks.data.length > 0 ? (
+                                            tasks.data.map((task) => (
+                                                <tr key={task.id}>
                                                     <td className="px-4 py-2">
-                                                        {schedule.title}
+                                                        {task.title}
                                                     </td>
                                                     <td className="px-4 py-2">
-                                                        {new Date(schedule.due_date).toLocaleDateString("id-ID", {
+                                                        {new Date(task.due_date).toLocaleDateString("id-ID", {
                                                             year: "numeric",
                                                             month: "short",
                                                             day: "numeric"
                                                         })}
                                                     </td>
                                                     <td className="px-4 py-2">
-                                                        {schedule.time_notif}
+                                                        {task.time_notif}
                                                     </td>
                                                     <td className="px-4 py-2">
-                                                        {schedule.status}
+                                                        {task.status}
                                                     </td>
                                                     <td className="px-4 py-2 text-center md:space-x-auto lg:space-x-2 space-y-1">
                                                         <button
-                                                            key={schedule.id}
+                                                            key={task.id}
                                                             onClick={() => {
                                                                 setSelectedSchedule(
-                                                                    schedule
+                                                                    task
                                                                 );
                                                                 setShowModal(
                                                                     true
@@ -193,8 +193,8 @@ export default function Schedule() {
                                                             as="button"
                                                             method="delete"
                                                             href={route(
-                                                                "schedules.destroy",
-                                                                schedule.id
+                                                                "tasks.destroy",
+                                                                task.id
                                                             )}
                                                             className="px-3 py-1 text-sm text-white bg-red-600 rounded hover:bg-red-700 w-20 h-8"
                                                         >
@@ -209,7 +209,7 @@ export default function Schedule() {
                                                     colSpan="5"
                                                     className="px-4 py-2 text-center text-gray-500"
                                                 >
-                                                    No schedules found.
+                                                    No tasks found.
                                                 </td>
                                             </tr>
                                         )}
@@ -219,7 +219,7 @@ export default function Schedule() {
 
                             {/* Pagination Links */}
                             <div className="mt-4 flex flex-wrap gap-1">
-                                {schedules.links.map((link, index) => (
+                                {tasks.links.map((link, index) => (
                                     <button
                                         key={index}
                                         disabled={!link.url}
@@ -238,7 +238,7 @@ export default function Schedule() {
                             <ScheduleModal
                                 show={showModal}
                                 onClose={() => setShowModal(false)}
-                                schedule={selectedSchedule}
+                                task={selectedSchedule}
                             />
                         </div>
                     </div>

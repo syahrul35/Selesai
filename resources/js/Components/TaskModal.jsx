@@ -36,7 +36,7 @@ export default function ScheduleModal({ show, onClose, schedule }) {
 
         if (schedule) {
             // edit
-            put(route('schedules.update', schedule.id), {
+            put(route('tasks.update', schedule.id), {
                 onSuccess: () => {
                     reset();
                     onClose();
@@ -44,7 +44,7 @@ export default function ScheduleModal({ show, onClose, schedule }) {
             });
         } else {
             // add
-            post(route('schedules.store'), {
+            post(route('tasks.store'), {
                 onSuccess: () => {
                     reset();
                     onClose();

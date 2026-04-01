@@ -8,7 +8,7 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('schedules:send-reminders')
+Schedule::command('tasks:send-reminders')
     ->everyMinute()
     ->withoutOverlapping()
     ->sendOutputTo(storage_path('logs/schedule-debug.log'));
