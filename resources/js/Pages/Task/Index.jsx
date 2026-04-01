@@ -1,13 +1,13 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, Link, router } from "@inertiajs/react";
 import { useState } from "react";
-import ScheduleModal from "../../Components/TaskModal";
+import TaskModal from "../../Components/TaskModal";
 
 export default function Task() {
-    const { tasks, month, year } = usePage().props;
+    const { tasks, projects, filters, month, year } = usePage().props;
 
     const [showModal, setShowModal] = useState(false);
-    const [selectedSchedule, setSelectedSchedule] = useState(null);
+    const [selectedTask, setSelectedTask] = useState(null);
 
     // Import Excel
     const [file, setFile] = useState(null);
@@ -63,7 +63,7 @@ export default function Task() {
                             <div className="mb-4">
                                 <button
                                     onClick={() => {
-                                        setSelectedSchedule(null);
+                                        setSelectedTask(null);
                                         setShowModal(true);
                                     }}
                                     className="px-4 py-2 bg-blue-600 text-white rounded"
@@ -96,6 +96,33 @@ export default function Task() {
                                         ⬆️ Import Excel
                                     </button>
                                 </form>
+                            </div>
+
+                            {/* Filter by Project */}
+                            <div className="mb-4 block text-sm font-medium text-gray-700">
+                                <select
+                                    value={filters.project_id || ""}
+                                    onChange={(e) =>
+                                        router.get(route("tasks.index"), {
+                                            month,
+                                            year,
+                                            project_id: e.target.value,
+                                        }, {
+                                            preserveState: true,
+                                            preserveScroll: true,
+                                        })
+                                    }
+                                    className="mt-1 block w-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                >
+                                    <option value="">All Projects</option>
+                                    <option value="no_project">No Project</option>
+
+                                    {projects.map((project) => (
+                                        <option key={project.id} value={project.id}>
+                                            {project.name}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             {/* Pagination */}
@@ -141,6 +168,9 @@ export default function Task() {
                                                 Title
                                             </th>
                                             <th className="px-4 py-2 text-left">
+                                                Project
+                                            </th>
+                                            <th className="px-4 py-2 text-left">
                                                 Due Date
                                             </th>
                                             <th className="px-4 py-2 text-left">
@@ -162,6 +192,17 @@ export default function Task() {
                                                         {task.title}
                                                     </td>
                                                     <td className="px-4 py-2">
+                                                        {task.project ? (
+                                                            <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                                                                {task.project.name}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded">
+                                                                No Project
+                                                            </span>
+                                                        )}
+                                                    </td>
+                                                    <td className="px-4 py-2">
                                                         {new Date(task.due_date).toLocaleDateString("id-ID", {
                                                             year: "numeric",
                                                             month: "short",
@@ -178,7 +219,7 @@ export default function Task() {
                                                         <button
                                                             key={task.id}
                                                             onClick={() => {
-                                                                setSelectedSchedule(
+                                                                setSelectedTask(
                                                                     task
                                                                 );
                                                                 setShowModal(
@@ -235,10 +276,11 @@ export default function Task() {
                             </div>
 
                             {/* Modal */}
-                            <ScheduleModal
+                            <TaskModal
                                 show={showModal}
                                 onClose={() => setShowModal(false)}
-                                task={selectedSchedule}
+                                task={selectedTask}
+                                projects={projects}
                             />
                         </div>
                     </div>

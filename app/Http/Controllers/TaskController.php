@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\TaskImport;
+use App\Models\Project;
 use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
-class ScheduleController extends Controller
+class TaskController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,19 +20,33 @@ class ScheduleController extends Controller
     {
         $month = (int) $request->get('month', now()->month);
         $year  = (int) $request->get('year', now()->year);
+        $projectId = $request->get('project_id');
 
         $start = Carbon::create($year, $month)->startOfMonth();
         $end   = Carbon::create($year, $month)->endOfMonth();
-        
-        $tasks = Task::where('user_id', Auth::id())
+
+        $tasks = Task::with('project')
+            ->where('user_id', Auth::id())
             ->whereBetween('due_date', [$start, $end])
+            ->when($projectId === 'no_project', function ($query) {
+                $query->whereNull('project_id');
+            })
+            ->when($projectId && $projectId !== 'no_project', function ($query) use ($projectId) {
+                $query->where('project_id', $projectId);
+            })
             ->orderBy('due_date')
             ->orderBy('time_notif')
             ->paginate(10)
             ->withQueryString();
 
+        $projects = Project::where('user_id', Auth::id())->get();
+
         return Inertia::render('Task/Index', [
             'tasks' => $tasks,
+            'projects' => $projects,
+            'filters' => [
+                'project_id' => $projectId,
+            ],
             'month' => $month,
             'year' => $year,
         ]);
@@ -50,12 +65,18 @@ class ScheduleController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->input('project_id') === 'no_project') {
+            $request->merge(['project_id' => null]);
+        }
+
         $validate = $request->validate([
             'title' => 'required|string|max:255',
+            'project_id' => 'nullable|exists:projects,id',
             'due_date' => 'required|date',
             'status' => 'required|string|max:50',
             'time_notif' => 'required|date_format:H:i',
             'is_notified' => 'nullable|boolean',
+            'description' => 'nullable|string',
         ]);
 
         try {
@@ -104,12 +125,18 @@ class ScheduleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        if ($request->input('project_id') === 'no_project') {
+            $request->merge(['project_id' => null]);
+        }
+
         $validate = $request->validate([
             'title' => 'required|string|max:255',
+            'project_id' => 'nullable|exists:projects,id',
             'due_date' => 'required|date',
             'status' => 'required|string|max:50',
             'time_notif' => 'required|date_format:H:i',
             'is_notified' => 'nullable|boolean',
+            'description' => 'nullable|string',
         ]);
 
         try {

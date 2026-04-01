@@ -1,42 +1,54 @@
 import { useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
 
-export default function ScheduleModal({ show, onClose, schedule }) {
+export default function TaskModal({ show, onClose, task, projects = [] }) {
+    const projectOptions = [{ id: 'no_project', name: 'No Project' }, ...projects];
+
     const { data, setData, post, put, processing, reset } = useForm({
-        title: schedule?.title || '',
-        due_date: schedule?.due_date || '',
-        time_notif: schedule?.time_notif || '18:00',
-        status: schedule?.status || 'pending',
-        description: schedule?.description || '',
+        title: task?.title || '',
+        project_id: task?.project_id || '',
+        due_date: task?.due_date || '',
+        time_notif: task?.time_notif || '18:00',
+        status: task?.status || 'pending',
+        description: task?.description || '',
     });
 
+    const normalizeDate = (value) => {
+        if (!value) return '';
+        // Backend bisa kirim "2026-03-31T17:00:00.000000Z" atau "2026-03-31";
+        const dateOnly = value.toString().split('T')[0];
+        return dateOnly;
+    };
+
     useEffect(() => {
-        if (schedule) {
+        if (task) {
             setData({
-                title: schedule.title || '',
-                due_date: schedule.due_date || '',
-                time_notif: schedule.time_notif || '18:00',
-                status: schedule.status || 'pending',
-                description: schedule.description || '',
+                title: task.title || '',
+                project_id: task.project_id ?? 'no_project',
+                due_date: normalizeDate(task.due_date),
+                time_notif: task.time_notif || '18:00',
+                status: task.status || 'pending',
+                description: task.description || '',
             });
         } else {
             reset();
             setData({
                 title: '',
+                project_id: 'no_project',
                 due_date: '',
                 time_notif: '18:00',
                 status: 'pending',
                 description: '',
             });
         }
-    }, [schedule]);
+    }, [task]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        if (schedule) {
+        if (task) {
             // edit
-            put(route('tasks.update', schedule.id), {
+            put(route('tasks.update', task.id), {
                 onSuccess: () => {
                     reset();
                     onClose();
@@ -59,7 +71,7 @@ export default function ScheduleModal({ show, onClose, schedule }) {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
                 <h2 className="text-lg font-bold mb-4">
-                    {schedule ? 'Edit Schedule' : 'Add Schedule'}
+                    {task ? 'Edit Task' : 'Add Task'}
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,6 +82,22 @@ export default function ScheduleModal({ show, onClose, schedule }) {
                         onChange={(e) => setData('title', e.target.value)}
                         className="w-full border rounded px-3 py-2"
                     />
+
+                    <select
+                        value={data.project_id}
+                        onChange={(e) => setData('project_id', e.target.value)}
+                        className="w-full border rounded px-3 py-2"
+                    >
+                        <option value="">Select Project</option>
+                        <option value="no_project">No Project</option>
+                        {projectOptions
+                            .filter((proj) => proj.id !== 'no_project')
+                            .map((project) => (
+                                <option key={project.id} value={project.id}>
+                                    {project.name}
+                                </option>
+                            ))}
+                    </select>
 
                     <input
                         type="date"
@@ -114,7 +142,7 @@ export default function ScheduleModal({ show, onClose, schedule }) {
                             disabled={processing}
                             className="px-4 py-2 bg-blue-600 text-white rounded"
                         >
-                            {schedule ? 'Update' : 'Save'}
+                            {task ? 'Update' : 'Save'}
                         </button>
                     </div>
                 </form>
