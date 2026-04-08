@@ -14,17 +14,17 @@ export default defineConfig(({ mode }) => {
 
         server: isProduction
             ? {
-                host: "env.VITE_HOST",
-                https: env.VITE_HTTPS === "true",
-                cors: env.VITE_CORS === "true",
-                hmr: {
-                    host: "env.VITE_HOST",
-                },
-            }
+                  host: "env.VITE_HOST",
+                  https: env.VITE_HTTPS === "true",
+                  cors: env.VITE_CORS === "true",
+                  hmr: {
+                      host: "env.VITE_HOST",
+                  },
+              }
             : {
-                host: env.VITE_HOST || "localhost",
-                https: env.VITE_HTTPS === "true",
-                cors: env.VITE_CORS,
-            },
+                  host: env.VITE_HOST || "localhost",
+                  https: env.VITE_HTTPS === "true",
+                  cors: env.VITE_CORS,
+              },
     };
 });
