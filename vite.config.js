@@ -7,10 +7,10 @@ export default defineConfig({
         laravel({ input: "resources/js/app.jsx", refresh: true }),
         react(),
     ],
-    // server: {
-    //     host: "https://selesai.syahrulmaulana.cloud",
-    //     https: true,
-    //     cors: false,
-    //     hmr: { host: "https://selesai.syahrulmaulana.cloud" },
-    // },
+    server: {
+        host: "https://selesai.syahrulmaulana.cloud",
+        https: true,
+        cors: false,
+        hmr: { host: "https://selesai.syahrulmaulana.cloud" },
+    },
 });
