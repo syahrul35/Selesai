@@ -14,7 +14,7 @@ export default defineConfig( ({ mode }) => {
         server: {
             host,
             https: env.VITE_HTTPS === "true",
-            cors: env.VITE_CORS,
+            cors: env.VITE_CORS === "true",
 
             hmr: {
                 host,
