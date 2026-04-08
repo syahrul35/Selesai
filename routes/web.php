@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Foundation\Application;
@@ -18,9 +19,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('dashboard', DashboardController::class);
+    Route::resource('projects', ProjectController::class);
     Route::resource('tasks', TaskController::class);
     Route::post('/tasks/import', [TaskController::class, 'import'])->name('tasks.import');
-    Route::post('/tasks/{schedule}/confirm', [TaskController::class, 'confirm'])->name('tasks.confirm');
+    Route::post('/tasks/{task}/confirm', [TaskController::class, 'confirm'])->name('tasks.confirm');
     Route::resource('setting', SettingController::class);
 });
 

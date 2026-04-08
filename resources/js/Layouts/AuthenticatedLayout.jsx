@@ -32,10 +32,17 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </NavLink>
 
                                 <NavLink
+                                    href={route('projects.index')}
+                                    active={route().current('projects.index')}
+                                >
+                                    Projects
+                                </NavLink>
+
+                                <NavLink
                                     href={route('tasks.index')}
                                     active={route().current('tasks.index')}
                                 >
-                                    Project
+                                    Tasks
                                 </NavLink>
 
                                 <NavLink
@@ -141,7 +148,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         ' sm:hidden'
                     }
                 >
-                    <div className="space-y-1 pb-3 pt-2">
+                    <div className="space-y-1 pb-3 pt-2 bg-zinc-50">
                         <ResponsiveNavLink
                             href={route('dashboard.index')}
                             active={route().current('dashboard.index')}
@@ -150,10 +157,17 @@ export default function AuthenticatedLayout({ header, children }) {
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
+                            href={route('projects.index')}
+                            active={route().current('projects.index')}
+                        >
+                            Projects
+                        </ResponsiveNavLink>
+
+                        <ResponsiveNavLink
                             href={route('tasks.index')}
                             active={route().current('tasks.index')}
                         >
-                            Project
+                            Tasks
                         </ResponsiveNavLink>
 
                         <ResponsiveNavLink
@@ -164,7 +178,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         </ResponsiveNavLink>
                     </div>
 
-                    <div className="border-t border-gray-200 pb-1 pt-4">
+                    <div className="border-t border-gray-200 pb-1 pt-4 bg-zinc-50">
                         <div className="px-4">
                             <div className="text-base font-medium text-gray-800">
                                 {user.name}
