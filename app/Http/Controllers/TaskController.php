@@ -18,6 +18,9 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+        $today = Carbon::today();
+        $userId = Auth::id();
+
         $month = (int) $request->get('month', now()->month);
         $year  = (int) $request->get('year', now()->year);
         $projectId = $request->get('project_id');
@@ -25,8 +28,20 @@ class TaskController extends Controller
         $start = Carbon::create($year, $month)->startOfMonth();
         $end   = Carbon::create($year, $month)->endOfMonth();
 
-        $tasks = Task::with('project')
-            ->where('user_id', Auth::id())
+        // Base query: semua task yang relevan untuk user
+        $baseQuery = Task::with('project', 'assignedUser')
+            ->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId) // task yang dibuat user
+                ->orWhere('assigned_to', $userId); // task yang di-assign ke user
+            })
+            ->select('tasks.*')
+            ->distinct();
+
+        // Calendar reference (clone biar tidak bentrok)
+        $calendarTasks = (clone $baseQuery);
+
+        // Main tasks (list + filter)
+        $tasks = (clone $baseQuery)
             ->whereBetween('due_date', [$start, $end])
             ->when($projectId === 'no_project', function ($query) {
                 $query->whereNull('project_id');
@@ -39,7 +54,10 @@ class TaskController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $projects = Project::where('user_id', Auth::id())->get();
+        // Project list berdasarkan membership
+        $projects = Project::whereHas('members', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->get();
 
         return Inertia::render('Task/Index', [
             'tasks' => $tasks,
@@ -49,6 +67,10 @@ class TaskController extends Controller
             ],
             'month' => $month,
             'year' => $year,
+            'todayTasks' => (clone $calendarTasks)
+                ->whereDate('due_date', $today)
+                ->limit(7)
+                ->get(),
         ]);
     }
 
