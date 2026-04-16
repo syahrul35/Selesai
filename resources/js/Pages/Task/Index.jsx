@@ -5,9 +5,10 @@ import TaskHeader from "./Components/TaskHeader";
 import TaskFilter from "./Components/TaskFilter";
 import TaskTable from "./Components/TaskTable";
 import TaskModal from "./Components/TaskModal";
+import Calendar from "@/Components/Calendar";
 
 export default function Task() {
-    const { tasks, projects, filters, month, year } = usePage().props;
+    const { tasks, projects, filters, month, year, todayTasks } = usePage().props;
 
     const [showModal, setShowModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
@@ -72,6 +73,11 @@ export default function Task() {
                                 task={selectedTask}
                                 projects={projects}
                             />
+
+                            {/* Calendar */}
+                            {/* <div className="bg-white p-4 rounded-xl shadow-sm">
+                                <Calendar tasks={todayTasks} />
+                            </div> */}
                         </div>
                     </div>
                 </div>
