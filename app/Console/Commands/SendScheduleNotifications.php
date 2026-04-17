@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Mail\ScheduleNotificationMail;
 use App\Models\Schedule;
+use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
@@ -32,23 +33,28 @@ class SendScheduleNotifications extends Command
         $now = now();
         $this->info("Running command at: " . $now);
 
-        $tasks = Schedule::where('is_notified', false)
+        $tasks = Task::where('is_notified', false)
             ->whereDate('due_date', $now->toDateString())
             ->whereTime('time_notif', '<=', $now->toTimeString())
-            ->with('user')
+            ->with('user', 'assignedUser')
             ->get();
 
         $this->info("Found " . $tasks->count() . " schedule.");
 
-        foreach ($tasks as $schedule) {
-            if ($schedule->user && $schedule->user->email) {
-                Mail::to($schedule->user->email)->send(new ScheduleNotificationMail($schedule));
-                $schedule->update([
+        foreach ($tasks as $task) {
+            // ambil email dengan prioritas
+            $email = optional($task->assignedUser)->email ?? optional($task->user)->email;
+
+            if ($email) {
+                Mail::to($email)->send(new ScheduleNotificationMail($task));
+
+                $task->update([
                     'is_notified' => true,
                 ]);
-                $this->info("Email sending to {$schedule->user->email}");
+
+                $this->info("Email sent to {$email}");
             } else {
-                $this->warn("User/Email not found for schedule ID {$schedule->id}");
+                $this->warn("No valid email for task ID {$task->id}");
             }
         }
 
