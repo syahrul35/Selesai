@@ -1,6 +1,7 @@
 import { Link } from "@inertiajs/react";
 
 export default function ProjectTable({ projects, onEdit }) {
+    
     return (
         <div className="overflow-x-auto">
             <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
@@ -16,12 +17,7 @@ export default function ProjectTable({ projects, onEdit }) {
                 <tbody className="divide-y divide-gray-100 text-center">
                     {projects.length > 0 ? (
                         projects.map((project) => {
-                            const isOwner = project.members?.some(
-                                (member) =>
-                                    member.id === auth.user.id &&
-                                    member.pivot?.role === "owner"
-                            );
-
+                            const isOwner = project.is_owner;
                             return (
                                 <tr key={project.id}>
                                     {/* Name */}

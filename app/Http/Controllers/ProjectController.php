@@ -16,7 +16,8 @@ class ProjectController extends Controller
     {
         $userId = Auth::id();
 
-        $projects = Project::whereHas('members', function ($query) use ($userId) {
+        $projects = Project::with('members')
+            ->whereHas('members', function ($query) use ($userId) {
                 $query->where('user_id', $userId);
             })
             ->withCount([
@@ -35,15 +36,20 @@ class ProjectController extends Controller
                 }
             ])
             ->get()
-            ->map(function ($project) {
+            ->map(function ($project) use ($userId) {
                 $total = $project->total_tasks;
                 $done = $project->done_tasks;
+
+                $member = $project->members->firstWhere('id', $userId);
+                $role = $member?->pivot?->role;
 
                 return [
                     'id' => $project->id,
                     'name' => $project->name,
                     'total_tasks' => $total,
                     'progress' => $total > 0 ? round(($done / $total) * 100) : 0,
+                    'role' => $role,
+                    'is_owner' => $role === 'owner',
                 ];
             });
 
@@ -70,9 +76,14 @@ class ProjectController extends Controller
         ]);
 
         try {
-            $validate['user_id'] = Auth::id();
+            $project = Project::create([
+                'name' => $validate['name'],
+                'user_id' => Auth::id(), // optional (kalau masih dipakai)
+            ]);
 
-            Project::create($validate);
+            $project->members()->attach(Auth::id(), [
+                'role' => 'owner'
+            ]);
 
             return redirect()
                 ->route('projects.index')
@@ -101,7 +112,7 @@ class ProjectController extends Controller
     {
         $userId = Auth::id();
 
-        // Authorization: make sure the user is a project member
+        // Authorization
         abort_unless(
             $project->members()->where('user_id', $userId)->exists(),
             403
@@ -110,8 +121,9 @@ class ProjectController extends Controller
         // Load members
         $project->load('members');
 
-        // Take the tasks that are assigned to the user or created by the user, and belong to the project
+        // Tasks with relation
         $tasks = $project->tasks()
+            ->with('assignedUser')
             ->where(function ($q) use ($userId) {
                 $q->where('user_id', $userId)
                 ->orWhere('assigned_to', $userId);
@@ -120,10 +132,24 @@ class ProjectController extends Controller
             ->orderBy('time_notif')
             ->get();
 
+        $projects = collect([$project]);
+
         return inertia('Project/Show', [
+            'projects' => $projects,
             'project' => $project,
             'tasks' => $tasks,
-            'users' => $project->members()->select('users.id', 'users.name')->get(),
+            'allUsers' => User::all()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ];
+            }),
+            'users' => $project->members->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                ];
+            }),
         ]);
     }
 

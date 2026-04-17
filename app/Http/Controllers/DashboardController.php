@@ -34,7 +34,7 @@ class DashboardController extends Controller
             })
             ->where(function ($q) use ($userId) {
                 $q->where('user_id', $userId)
-                ->orWhere('assigned_to', $userId);
+                    ->orWhere('assigned_to', $userId);
             });
 
         return Inertia::render('Dashboard', [
@@ -55,9 +55,12 @@ class DashboardController extends Controller
                 ->get(),
 
             'summary' => [
-                'totalProjects' => Project::where('user_id', $userId)->count(),
+                'totalProjects' => Project::with('members')
+                    ->whereHas('members', function ($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    })->count(),
                 'totalTasks' => $tasks->count(),
-                'completedTasks' => (clone $tasks)->where('status', 'completed')->count(),
+                'completedTasks' => (clone $tasks)->where('status', 'done')->count(),
             ]
         ]);
     }

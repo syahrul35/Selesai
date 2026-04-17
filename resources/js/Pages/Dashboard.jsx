@@ -22,6 +22,7 @@ function Badge({ children, color }) {
 }
 
 function TaskListCard({ title, tasks, type }) {
+    
     return (
         <div className="bg-white shadow-sm rounded-xl p-4">
             <h3 className="text-lg font-semibold mb-3">{title}</h3>
@@ -65,7 +66,7 @@ function TaskListCard({ title, tasks, type }) {
                             <div className="mt-2 flex justify-between items-center">
                                 <Badge
                                     color={
-                                        task.status === 'completed'
+                                        task.status === 'done'
                                             ? 'green'
                                             : 'gray'
                                     }
@@ -88,6 +89,7 @@ function TaskListCard({ title, tasks, type }) {
 }
 
 function SummaryCard({ summary }) {
+    
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-xl shadow-sm">
@@ -121,14 +123,14 @@ function QuickActions() {
                 href="/tasks/create"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
             >
-                ➕ Add Task
+                + Add Task
             </Link>
 
             <Link
                 href="/projects/create"
                 className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
             >
-                ➕ Add Project
+                + Add Project
             </Link>
         </div>
     );
