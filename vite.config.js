@@ -27,4 +27,6 @@ export default defineConfig(({ mode }) => {
                 cors: env.VITE_CORS,
             },
     };
+
 });
+
