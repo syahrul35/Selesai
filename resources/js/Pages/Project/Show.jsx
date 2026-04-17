@@ -1,12 +1,11 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, usePage, router } from "@inertiajs/react";
+import { Head, usePage, router, Link } from "@inertiajs/react";
 import { useState } from "react";
 import { InviteMemberModal } from "./Components/InviteMemberModal";
+import TaskModal from "./Components/TaskModal";
 
 export default function Show() {
-    const { project, tasks, users, auth } = usePage().props;
-    // console.log("🚀 ~ Show ~ tasks:", tasks)
-    // console.log("🚀 ~ Show ~ project:", project);
+    const { project, tasks, users, allUsers, auth } = usePage().props;
 
     const [statusFilter, setStatusFilter] = useState("");
     const [priorityFilter, setPriorityFilter] = useState("");
@@ -20,13 +19,11 @@ export default function Show() {
 
     const currentUserId = auth.user.id;
 
-    // mapping user biar cepat lookup
+    // Create a map of user IDs to user objects for easy lookup
     const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
-    // cek role user di project
+    // check user role in the project
     const myMember = project.members.find((m) => m.id === currentUserId);
-
-    // const isOwner = myMember?.pivot?.role === "owner";
 
     const isOwner = project.members?.some(
         (member) =>
@@ -45,6 +42,16 @@ export default function Show() {
 
     // invite member
     const [showInvite, setShowInvite] = useState(false);
+
+    // show add/edit task modal
+    const [selectedTask, setSelectedTask] = useState(null);
+    const [showModal, setShowTaskModal] = useState(false);
+
+    // Handle close modal function to reset selectedTask
+    const handleCloseModal = () => {
+        setShowTaskModal(false);
+        setSelectedTask(null);
+    };
 
     return (
         <AuthenticatedLayout
@@ -144,7 +151,13 @@ export default function Show() {
                                 {/* Add Task */}
                                 {isOwner && (
                                     <>
-                                        <button className="px-4 py-2 bg-blue-600 text-white rounded">
+                                        <button
+                                            onClick={() => {
+                                                setSelectedTask(null);
+                                                setShowTaskModal(true);
+                                            }}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded"
+                                        >
                                             + Add Task
                                         </button>
                                     </>
@@ -288,37 +301,52 @@ export default function Show() {
                                                         {/* Action */}
                                                         <td className="px-4 py-3 text-right">
                                                             <div className="flex justify-end gap-2">
-                                                                {isOwner ? (
+                                                                {task.status !==
+                                                                    "done" && (
                                                                     <>
-                                                                        <button className="px-3 py-1 text-xs bg-amber-500 text-white rounded">
-                                                                            Edit
-                                                                        </button>
+                                                                        {isOwner ? (
+                                                                            <>
+                                                                                <button
+                                                                                    className="px-3 py-1 text-xs bg-amber-500 text-white rounded"
+                                                                                    onClick={() => {
+                                                                                        setSelectedTask(
+                                                                                            task,
+                                                                                        );
+                                                                                        setShowTaskModal(
+                                                                                            true,
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    Edit
+                                                                                </button>
 
-                                                                        <button
-                                                                            onClick={() =>
-                                                                                handleDelete(
-                                                                                    task.id,
-                                                                                )
-                                                                            }
-                                                                            className="px-3 py-1 text-xs bg-red-600 text-white rounded"
-                                                                        >
-                                                                            Delete
-                                                                        </button>
+                                                                                <button
+                                                                                    onClick={() =>
+                                                                                        handleDelete(
+                                                                                            task.id,
+                                                                                        )
+                                                                                    }
+                                                                                    className="px-3 py-1 text-xs bg-red-600 text-white rounded"
+                                                                                >
+                                                                                    Delete
+                                                                                </button>
+                                                                            </>
+                                                                        ) : (
+                                                                            isMyTask && (
+                                                                                <Link
+                                                                                    as="button"
+                                                                                    method="post"
+                                                                                    href={route(
+                                                                                        "tasks.confirm",
+                                                                                        task.id,
+                                                                                    )}
+                                                                                    className="px-3 py-1 text-xs bg-green-600 text-white rounded"
+                                                                                >
+                                                                                    Done
+                                                                                </Link>
+                                                                            )
+                                                                        )}
                                                                     </>
-                                                                ) : (
-                                                                    isMyTask && (
-                                                                        <button
-                                                                            onClick={() =>
-                                                                                updateStatus(
-                                                                                    task.id,
-                                                                                    "done",
-                                                                                )
-                                                                            }
-                                                                            className="px-3 py-1 text-xs bg-green-600 text-white rounded"
-                                                                        >
-                                                                            Done
-                                                                        </button>
-                                                                    )
                                                                 )}
                                                             </div>
                                                         </td>
@@ -338,16 +366,26 @@ export default function Show() {
                 </div>
             </div>
 
+            {/* Invite Member Modal */}
             <InviteMemberModal
                 show={showInvite}
                 onClose={() => setShowInvite(false)}
-                users={users}
+                users={allUsers}
                 onSubmit={(user) => {
                     router.post(route("projects.invite", project.id), {
                         user_id: user.id,
                     });
                     setShowInvite(false);
                 }}
+            />
+
+            {/* Add/Edit Task Modal */}
+            <TaskModal
+                show={showModal}
+                onClose={handleCloseModal}
+                projects={[project]}
+                fixedProjectId={project.id}
+                task={selectedTask}
             />
         </AuthenticatedLayout>
     );

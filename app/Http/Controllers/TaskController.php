@@ -55,9 +55,11 @@ class TaskController extends Controller
             ->withQueryString();
 
         // Project list berdasarkan membership
-        $projects = Project::whereHas('members', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->get();
+        $projects = Project::with('members')
+            ->whereHas('members', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->get();
 
         return Inertia::render('Task/Index', [
             'tasks' => $tasks,
@@ -87,6 +89,7 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         if ($request->input('project_id') === 'no_project') {
             $request->merge(['project_id' => null]);
         }
@@ -94,15 +97,16 @@ class TaskController extends Controller
         $validate = $request->validate([
             'title' => 'required|string|max:255',
             'project_id' => 'nullable|exists:projects,id',
+            'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'required|date',
-            'status' => 'required|string|max:50',
+            'priority' => 'required|in:low,medium,high',
             'time_notif' => 'required|date_format:H:i',
-            'is_notified' => 'nullable|boolean',
             'description' => 'nullable|string',
         ]);
 
         try {
             $validate['user_id'] = Auth::id();
+            $validate['status'] = 'pending'; // task default status
 
             Task::create($validate);
 
@@ -150,14 +154,15 @@ class TaskController extends Controller
         if ($request->input('project_id') === 'no_project') {
             $request->merge(['project_id' => null]);
         }
+        // dd($request->all());
 
         $validate = $request->validate([
             'title' => 'required|string|max:255',
             'project_id' => 'nullable|exists:projects,id',
+            'assigned_to' => 'nullable|exists:users,id',
             'due_date' => 'required|date',
-            'status' => 'required|string|max:50',
-            'time_notif' => 'required|date_format:H:i',
-            'is_notified' => 'nullable|boolean',
+            'priority' => 'required|in:low,medium,high',
+            'time_notif' => 'required|date_format:H:i:s',
             'description' => 'nullable|string',
         ]);
 
@@ -231,15 +236,26 @@ class TaskController extends Controller
 
     public function confirm(Task $task)
     {
+        if ($task->user_id !== Auth::id() && $task->assigned_to !== Auth::id()) {
+            abort(403);
+        }
+        
         try {
+            $completedAt = now();
+
+            $dueDateTime = \Carbon\Carbon::parse($task->due_date . ' ' . $task->time_notif);
+            $isLate = $completedAt->gt($dueDateTime);
+
             $task->update([
-                'status' => 'done'
+                'status' => 'done',
+                'completed_at' => $completedAt,
+                'is_late' => $isLate,
             ]);
 
             return back();
         } catch (\Throwable $th) {
             return redirect()
-                ->route('dashboard.index')
+                ->back()
                 ->with([
                     'message' => [
                         'type' => 'failed',
