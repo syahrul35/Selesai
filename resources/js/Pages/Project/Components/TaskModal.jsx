@@ -24,7 +24,7 @@ export default function ProjectModal({ show, onClose, projects = [], fixedProjec
         title: task?.title || '',
         project_id: initialProjectId,
         assigned_to: task?.assigned_to || '',
-        due_date: task?.due_date || '',
+        due_at: task?.due_at || '',
         time_notif: task?.time_notif || '18:00',
         priority: task?.priority || 'medium',
         description: task?.description || '',
@@ -59,7 +59,7 @@ export default function ProjectModal({ show, onClose, projects = [], fixedProjec
                 title: task.title || '',
                 project_id: fixedProjectId || (task.project_id ?? 'no_project'),
                 assigned_to: task.assigned_to || '',
-                due_date: normalizeDate(task.due_date),
+                due_at: normalizeDate(task.due_at),
                 time_notif: task.time_notif || '18:00',
                 priority: task.priority || 'medium',
                 description: task.description || '',
@@ -70,7 +70,7 @@ export default function ProjectModal({ show, onClose, projects = [], fixedProjec
                 title: '',
                 project_id: 'no_project',
                 assigned_to: '',
-                due_date: '',
+                due_at: '',
                 time_notif: '18:00',
                 priority: 'medium',
                 description: '',
@@ -85,7 +85,7 @@ export default function ProjectModal({ show, onClose, projects = [], fixedProjec
             title: data.title,
             project_id: data.project_id === 'no_project' ? null : data.project_id,
             assigned_to: data.assigned_to || null,
-            due_date: data.due_date,
+            due_at: data.due_at,
             time_notif: data.time_notif,
             priority: data.priority,
             description: data.description,
@@ -178,14 +178,14 @@ export default function ProjectModal({ show, onClose, projects = [], fixedProjec
                     {/* Due Date */}
                     <input
                         type="date"
-                        value={data.due_date}
-                        onChange={(e) => setData('due_date', e.target.value)}
+                        value={data.due_at}
+                        onChange={(e) => setData('due_at', e.target.value)}
                         className="w-full border rounded px-3 py-2"
                     />
 
                     {/* Time Notification */}
                     <input
-                        type="time"
+                        type="datetime-local"
                         value={data.time_notif}
                         onChange={(e) => setData('time_notif', e.target.value)}
                         className="w-full border rounded px-3 py-2"

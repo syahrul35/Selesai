@@ -39,17 +39,17 @@ class DashboardController extends Controller
 
         return Inertia::render('Dashboard', [
             'todayTasks' => (clone $tasks)
-                ->whereDate('due_date', $today)
+                ->whereDate('due_at', $today)
                 ->limit(7)
                 ->get(),
 
             'upcomingTasks' => (clone $tasks)
-                ->whereBetween('due_date', [$tomorrow, $next3Days])
+                ->whereBetween('due_at', [$tomorrow, $next3Days])
                 ->limit(5)
                 ->get(),
 
             'overdueTasks' => (clone $tasks)
-                ->whereDate('due_date', '<', $today)
+                ->whereDate('due_at', '<', $today)
                 ->where('status', '!=', 'completed')
                 ->limit(5)
                 ->get(),

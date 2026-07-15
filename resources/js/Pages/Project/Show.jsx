@@ -209,7 +209,7 @@ export default function Show() {
                                                             <div className="text-xs text-gray-500">
                                                                 Due:{" "}
                                                                 {new Date(
-                                                                    task.due_date,
+                                                                    task.due_at,
                                                                 ).toLocaleDateString() ||
                                                                     "-"}
                                                             </div>

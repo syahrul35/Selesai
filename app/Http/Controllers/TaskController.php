@@ -42,14 +42,14 @@ class TaskController extends Controller
 
         // Main tasks (list + filter)
         $tasks = (clone $baseQuery)
-            ->whereBetween('due_date', [$start, $end])
+            ->whereBetween('due_at', [$start, $end])
             ->when($projectId === 'no_project', function ($query) {
                 $query->whereNull('project_id');
             })
             ->when($projectId && $projectId !== 'no_project', function ($query) use ($projectId) {
                 $query->where('project_id', $projectId);
             })
-            ->orderBy('due_date')
+            ->orderBy('due_at')
             ->orderBy('time_notif')
             ->paginate(10)
             ->withQueryString();
@@ -70,7 +70,7 @@ class TaskController extends Controller
             'month' => $month,
             'year' => $year,
             'todayTasks' => (clone $calendarTasks)
-                ->whereDate('due_date', $today)
+                ->whereDate('due_at', $today)
                 ->limit(7)
                 ->get(),
         ]);
@@ -98,20 +98,24 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'project_id' => 'nullable|exists:projects,id',
             'assigned_to' => 'nullable|exists:users,id',
-            'due_date' => 'required|date',
+            'due_at' => 'required|date',
             'priority' => 'required|in:low,medium,high',
-            'time_notif' => 'required|date_format:H:i',
+            'time_notif' => 'required|date_format:Y-m-d\TH:i', // must date type timestramp
             'description' => 'nullable|string',
         ]);
 
         try {
             $validate['user_id'] = Auth::id();
             $validate['status'] = 'pending'; // task default status
+            $validate['is_notified'] = false; // task default is_notified
+            $validate['completed_at'] = null; // task default completed_at
+            $validate['is_late'] = false; // task default is_late
 
+            // dd($validate);
             Task::create($validate);
 
             return redirect()
-                ->route('tasks.index')
+                ->back()
                 ->with([
                     'message' => [
                         'type' => 'success',
@@ -119,8 +123,9 @@ class TaskController extends Controller
                     ]
                 ]);
         } catch (\Throwable $th) {
+            dd($th);
             return redirect()
-                ->route('tasks.index')
+                ->back()
                 ->with([
                     'message' => [
                         'type' => 'failed',
@@ -160,7 +165,7 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'project_id' => 'nullable|exists:projects,id',
             'assigned_to' => 'nullable|exists:users,id',
-            'due_date' => 'required|date',
+            'due_at' => 'required|date',
             'priority' => 'required|in:low,medium,high',
             'time_notif' => 'required|date_format:H:i:s',
             'description' => 'nullable|string',
@@ -243,8 +248,7 @@ class TaskController extends Controller
         try {
             $completedAt = now();
 
-            $dueDateTime = \Carbon\Carbon::parse($task->due_date . ' ' . $task->time_notif);
-            $isLate = $completedAt->gt($dueDateTime);
+            $isLate = $completedAt->gt(Carbon::parse($task->time_notif));
 
             $task->update([
                 'status' => 'done',

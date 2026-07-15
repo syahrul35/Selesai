@@ -17,9 +17,9 @@ class TaskImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
-        // Handle due_date (Excel bisa kirim angka)
-        $dueDate = isset($row['due_date'])
-            ? Carbon::parse($row['due_date'])->format('Y-m-d')
+        // Handle due_at (Excel bisa kirim angka)
+        $dueDate = isset($row['due_at'])
+            ? Carbon::parse($row['due_at'])->format('Y-m-d')
             : null;
 
         // Handle time_notif (normalize ke H:i:s)
@@ -32,7 +32,7 @@ class TaskImport implements ToModel, WithHeadingRow
             'title'       => $row['title'] ?? 'Untitled Task',
             'project_id'  => $row['project_id'] ?? null,
             'assigned_to' => $row['assigned_to'] ?? null,
-            'due_date'    => $dueDate,
+            'due_at'    => $dueDate,
             'time_notif'  => $timeNotif,
             'priority'    => $row['priority'] ?? 'medium',
             'status'      => $row['status'] ?? 'pending',

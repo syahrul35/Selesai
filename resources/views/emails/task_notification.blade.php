@@ -9,7 +9,7 @@
 
     <p>{{ $task->description ?? 'Tidak ada deskripsi.' }}</p>
 
-    <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}</p>
+    <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($task->due_at)->format('d M Y') }}</p>
     <p><strong>Waktu Notifikasi:</strong> {{ $task->time_notif }}</p>
 
     <p>Status saat ini: <strong>{{ ucfirst($task->status) }}</strong></p>

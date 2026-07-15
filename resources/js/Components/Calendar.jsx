@@ -49,7 +49,7 @@ const Calendar = ({ transactions = [], categories = [] }) => {
         const dateString = date.format("YYYY-MM-DD");
 
         return tasks.filter((s) => {
-            const scheduleDate = dayjs(s.due_date).format("YYYY-MM-DD");
+            const scheduleDate = dayjs(s.due_at).format("YYYY-MM-DD");
             return scheduleDate === dateString;
         });
     };

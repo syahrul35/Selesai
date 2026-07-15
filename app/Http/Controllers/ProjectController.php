@@ -128,7 +128,7 @@ class ProjectController extends Controller
                 $q->where('user_id', $userId)
                 ->orWhere('assigned_to', $userId);
             })
-            ->orderBy('due_date')
+            ->orderBy('due_at')
             ->orderBy('time_notif')
             ->get();
 

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('title');
-            $table->date('due_date');
+            $table->date('due_at');
             $table->enum('status', ['pending', 'done'])->default('pending');;
             $table->text('description')->nullable();
             $table->time('time_notif')->default('18:00');

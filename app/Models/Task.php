@@ -12,7 +12,7 @@ class Task extends Model
         'title',
         'project_id',
         'assigned_to',
-        'due_date',
+        'due_at',
         'status',
         'time_notif',
         'is_notified',
@@ -23,7 +23,7 @@ class Task extends Model
     ];
 
     protected $casts = [
-        'due_date'     => 'datetime',
+        'due_at'     => 'datetime',
         'completed_at' => 'datetime',
         'is_notified'  => 'boolean',
         'is_late'      => 'boolean',

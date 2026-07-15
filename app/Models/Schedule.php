@@ -11,7 +11,7 @@ class Schedule extends Model
     protected $fillable = [
         'user_id',
         'title',
-        'due_date',
+        'due_at',
         'status',
         'time_notif',
         'is_notified',
@@ -19,7 +19,7 @@ class Schedule extends Model
     ];
 
     protected $casts = [
-        'due_date'    => 'date',
+        'due_at'    => 'date',
         'is_notified' => 'boolean',
     ];
 

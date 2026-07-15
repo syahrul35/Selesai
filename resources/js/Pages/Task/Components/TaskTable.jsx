@@ -97,10 +97,10 @@ export default function TaskTable({ tasks, onEdit }) {
 
                                     {/* Due Date */}
                                     <td
-                                        className={`px-4 py-2 ${getDueDateStyle(task.due_date)}`}
+                                        className={`px-4 py-2 ${getDueDateStyle(task.due_at)}`}
                                     >
                                         {new Date(
-                                            task.due_date,
+                                            task.due_at,
                                         ).toLocaleDateString("id-ID", {
                                             year: "numeric",
                                             month: "short",
