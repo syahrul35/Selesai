@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('project_id')->nullable()->constrained()->onDelete('set null')->index();
+            $table->renameColumn('due_date', 'due_at');
+            $table->date('due_at')->nullable()->change();
         });
     }
 
@@ -22,8 +23,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->dropForeign(['project_id']);
-            $table->dropColumn('project_id');
+            $table->renameColumn('due_at', 'due_date');
+            $table->date('due_date')->nullable()->change();
         });
     }
 };

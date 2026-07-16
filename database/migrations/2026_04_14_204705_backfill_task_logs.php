@@ -14,14 +14,18 @@ return new class extends Migration
     {
         DB::table('tasks')->chunkById(100, function ($tasks) {
             foreach ($tasks as $task) {
-                DB::table('task_logs')->insert([
-                    'task_id' => $task->id,
-                    'user_id' => $task->user_id,
-                    'type' => 'update',
-                    'note' => $task->description,
-                    'created_at' => $task->created_at,
-                    'updated_at' => $task->updated_at,
-                ]);
+                DB::table('task_logs')->updateOrInsert(
+                    [
+                        'task_id' => $task->id,
+                        'type' => 'update',
+                    ],
+                    [
+                        'user_id' => $task->user_id,
+                        'note' => $task->description,
+                        'created_at' => $task->created_at,
+                        'updated_at' => $task->updated_at,
+                    ]
+                );
             }
         });
     }
@@ -31,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        DB::table('task_logs')->where('type', 'update')->delete();
     }
 };

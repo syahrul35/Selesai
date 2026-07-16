@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('task_logs', function (Blueprint $table) {
             $table->id();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->enum('type', ['update', 'done', 'late_reason']);
             $table->text('note')->nullable();
             $table->timestamps();

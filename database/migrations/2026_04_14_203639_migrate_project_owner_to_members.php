@@ -14,13 +14,17 @@ return new class extends Migration
     {
         DB::table('projects')->whereNotNull('user_id')->chunkById(100, function ($projects) {
             foreach ($projects as $project) {
-                DB::table('project_members')->insert([
-                    'project_id' => $project->id,
-                    'user_id' => $project->user_id,
-                    'role' => 'owner',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                DB::table('project_members')->updateOrInsert(
+                    [
+                        'project_id' => $project->id,
+                        'user_id' => $project->user_id,
+                    ],
+                    [
+                        'role' => 'owner',
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
             }
         });
     }
@@ -30,8 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('members', function (Blueprint $table) {
-            //
-        });
+        DB::table('project_members')->where('role', 'owner')->delete();
     }
 };

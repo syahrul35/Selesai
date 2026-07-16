@@ -40,6 +40,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->dropForeign(['assigned_to']);
+            $table->dropColumn(['assigned_to', 'priority', 'is_late', 'completed_at']);
+            
+            $table->enum('status', ['pending', 'done'])->default('pending')->change();
+        });
     }
 };
