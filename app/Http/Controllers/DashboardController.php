@@ -50,7 +50,13 @@ class DashboardController extends Controller
 
             'overdueTasks' => (clone $tasks)
                 ->whereDate('due_at', '<', $today)
-                ->where('status', '!=', 'completed')
+                ->where('status', '!=', 'done')
+                ->limit(5)
+                ->get(),
+
+            'lateTasks' => (clone $tasks)
+                ->where('is_late', true)
+                // ->where('status', '==', 'done')
                 ->limit(5)
                 ->get(),
 

@@ -120,14 +120,14 @@ function QuickActions() {
     return (
         <div className="bg-white p-4 rounded-xl shadow-sm flex gap-4">
             <Link
-                href="/tasks/create"
+                href="/tasks"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm"
             >
                 + Add Task
             </Link>
 
             <Link
-                href="/projects/create"
+                href="/projects"
                 className="px-4 py-2 bg-green-600 text-white rounded-lg text-sm"
             >
                 + Add Project
@@ -145,8 +145,17 @@ export default function Dashboard() {
         todayTasks,
         upcomingTasks,
         overdueTasks,
+        lateTasks,
         summary,
     } = usePage().props;
+
+    console.log('Dashboard Props:', {
+        todayTasks,
+        upcomingTasks,
+        overdueTasks,
+        lateTasks,
+        summary,
+    });
 
     return (
         <AuthenticatedLayout

@@ -11,9 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Rename column
         Schema::table('tasks', function (Blueprint $table) {
             $table->renameColumn('due_date', 'due_at');
-            $table->date('due_at')->nullable()->change();
+        });
+
+        // Change column type
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->timestamp('due_at')->nullable()->change();
+            $table->timestamp('time_notif')->nullable()->change();
         });
     }
 
@@ -22,9 +28,15 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Change column type back
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->date('due_at')->nullable()->change();
+            $table->date('time_notif')->nullable()->change();
+        });
+
+        // Rename column back
         Schema::table('tasks', function (Blueprint $table) {
             $table->renameColumn('due_at', 'due_date');
-            $table->date('due_date')->nullable()->change();
         });
     }
 };
