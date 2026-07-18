@@ -20,19 +20,20 @@ class Task extends Model
         'description',
         'completed_at',
         'is_late',
+        'late_reason',
     ];
 
     protected $casts = [
+        'time_notif'  => 'datetime',
         'due_at'     => 'datetime',
         'completed_at' => 'datetime',
         'is_notified'  => 'boolean',
         'is_late'      => 'boolean',
     ];
 
-    // Accessor untuk tampilan saja, jangan ubah format asli field
-    public function getTimeNotifFormattedAttribute()
+    protected function serializeDate(\DateTimeInterface $date)
     {
-        return Carbon::parse($this->time_notif)->format('H:i');
+        return $date->format('Y-m-d H:i:s');
     }
 
     public function user()

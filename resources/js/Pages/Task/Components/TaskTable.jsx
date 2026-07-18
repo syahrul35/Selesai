@@ -1,4 +1,6 @@
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
+import LateTaskModal from "./LateTaskModal";
+import { useState } from "react";
 
 export default function TaskTable({ tasks, onEdit }) {
     const { auth } = usePage().props;
@@ -43,6 +45,27 @@ export default function TaskTable({ tasks, onEdit }) {
         }
 
         return "";
+    };
+
+    // late task modal state
+    const [showLateModal, setShowLateModal] = useState(false);
+    const [taskToConfirm, setTaskToConfirm] = useState(null);
+
+    const isOverdue = (dueDate) => {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        return due < today;
+    };
+
+    const handleDoneClick = (task) => {
+        if (isOverdue(task.due_at)) {
+            setTaskToConfirm(task);
+            setShowLateModal(true);
+        } else {
+            // Jika tidak telat, langsung tembak route confirm
+            router.post(route("tasks.confirm", task.id));
+        }
     };
 
     return (
@@ -132,18 +155,48 @@ export default function TaskTable({ tasks, onEdit }) {
                                     </td>
 
                                     {/* Actions */}
-                                    {task.status !== "done" && (
-                                        <>
-                                            {task.user_id === auth.user.id && (
-                                                <td className="px-4 py-3">
-                                                    <div className="flex flex-col sm:flex-row gap-2 sm:justify-center">
+                                    {task.status !== "done" &&
+                                        task.user_id === auth.user.id && (
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-center justify-between min-w-[120px]">
+                                                    {/* Tombol Done di Kiri */}
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDoneClick(
+                                                                task,
+                                                            )
+                                                        }
+                                                        className="px-4 py-2 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
+                                                    >
+                                                        Done
+                                                    </button>
+
+                                                    {/* Ikon Edit & Delete di Kanan (diberi gap) */}
+                                                    <div className="flex items-center gap-3 ml-4">
                                                         <button
                                                             onClick={() =>
                                                                 onEdit(task)
                                                             }
-                                                            className=" w-full sm:w-auto px-3 py-2 text-sm font-medium text-white bg-amber-500 hover:bg-amber-600 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                                            className="text-amber-500 hover:text-amber-600 transition"
+                                                            title="Edit Task"
                                                         >
-                                                            Edit
+                                                            {/* Ganti dengan <PencilIcon className="w-5 h-5" /> jika pakai Heroicons */}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={
+                                                                        2
+                                                                    }
+                                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                                />
+                                                            </svg>
                                                         </button>
 
                                                         <Link
@@ -153,29 +206,31 @@ export default function TaskTable({ tasks, onEdit }) {
                                                                 "tasks.destroy",
                                                                 task.id,
                                                             )}
-                                                            className=" w-full sm:w-auto px-3 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition focus:outline-none focus:ring-2 focus:ring-red-400
-                                                    "
+                                                            className="text-red-600 hover:text-red-700 transition"
+                                                            title="Delete Task"
                                                         >
-                                                            Delete
+                                                            {/* Ganti dengan <TrashIcon className="w-5 h-5" /> jika pakai Heroicons */}
+                                                            <svg
+                                                                xmlns="http://www.w3.org/2000/svg"
+                                                                className="w-5 h-5"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth={
+                                                                        2
+                                                                    }
+                                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                                />
+                                                            </svg>
                                                         </Link>
                                                     </div>
-                                                </td>
-                                            )}
-                                            <td className="px-4 py-3 text-center text-gray-400">
-                                                <Link
-                                                    as="button"
-                                                    method="post"
-                                                    href={route(
-                                                        "tasks.confirm",
-                                                        task.id,
-                                                    )}
-                                                    className="px-3 py-1 text-xs bg-green-600 text-white rounded"
-                                                >
-                                                    Done
-                                                </Link>
+                                                </div>
                                             </td>
-                                        </>
-                                    )}
+                                        )}
                                 </tr>
                             ))
                         ) : (
@@ -196,6 +251,14 @@ export default function TaskTable({ tasks, onEdit }) {
                     </tbody>
                 </table>
             </div>
+
+            {taskToConfirm && (
+                <LateTaskModal
+                    show={showLateModal}
+                    onClose={() => setShowLateModal(false)}
+                    task={taskToConfirm}
+                />
+            )}
         </div>
     );
 }

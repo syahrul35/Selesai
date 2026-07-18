@@ -89,7 +89,6 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         if ($request->input('project_id') === 'no_project') {
             $request->merge(['project_id' => null]);
         }
@@ -98,18 +97,20 @@ class TaskController extends Controller
             'title' => 'required|string|max:255',
             'project_id' => 'nullable|exists:projects,id',
             'assigned_to' => 'nullable|exists:users,id',
-            'due_at' => 'required|date',
             'priority' => 'required|in:low,medium,high',
             'time_notif' => 'required|date_format:Y-m-d\TH:i', // must date type timestramp
             'description' => 'nullable|string',
         ]);
 
         try {
+            // due at +9 hours from time_notif with Y-m-d\TH:i format
+            $validate['due_at'] = Carbon::parse($validate['time_notif'])->addHours(9)->format('Y-m-d H:i:s');
+
             $validate['user_id'] = Auth::id();
-            $validate['status'] = 'pending'; // task default status
-            $validate['is_notified'] = false; // task default is_notified
-            $validate['completed_at'] = null; // task default completed_at
-            $validate['is_late'] = false; // task default is_late
+            $validate['status'] = 'pending';
+            $validate['is_notified'] = false;
+            $validate['completed_at'] = null;
+            $validate['is_late'] = false;
 
             // dd($validate);
             Task::create($validate);
@@ -123,7 +124,6 @@ class TaskController extends Controller
                     ]
                 ]);
         } catch (\Throwable $th) {
-            dd($th);
             return redirect()
                 ->back()
                 ->with([
@@ -167,7 +167,7 @@ class TaskController extends Controller
             'assigned_to' => 'nullable|exists:users,id',
             'due_at' => 'required|date',
             'priority' => 'required|in:low,medium,high',
-            'time_notif' => 'required|date_format:H:i:s',
+            'time_notif' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
@@ -239,24 +239,33 @@ class TaskController extends Controller
         ]);
     }
 
-    public function confirm(Task $task)
+    public function confirm(Request $request, Task $task)
     {
+        $completedAt = now();
+        $isLate = $completedAt->gt(Carbon::parse($task->due_at));
+
         if ($task->user_id !== Auth::id() && $task->assigned_to !== Auth::id()) {
             abort(403);
         }
+
+        $validated = $request->validate([
+            'late_reason' => $isLate ? 'required|string|max:500' : 'nullable',
+        ]);
         
         try {
-            $completedAt = now();
-
-            $isLate = $completedAt->gt(Carbon::parse($task->time_notif));
-
             $task->update([
                 'status' => 'done',
                 'completed_at' => $completedAt,
                 'is_late' => $isLate,
+                'late_reason' => $validated['late_reason'] ?? null,
             ]);
 
-            return back();
+            return back()->with([
+                'message' => [
+                    'type' => 'success',
+                    'message' => 'Task marked as done!'
+                ]
+            ]);
         } catch (\Throwable $th) {
             return redirect()
                 ->back()
