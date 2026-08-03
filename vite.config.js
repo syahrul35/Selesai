@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
             react(),
         ],
 
+        // if local dont use docker
         server: isProduction
             ? {
                 host: "env.VITE_HOST",
@@ -26,5 +27,22 @@ export default defineConfig(({ mode }) => {
                 https: env.VITE_HTTPS === "true",
                 cors: env.VITE_CORS,
             },
+
+        // if local use docker
+        // server: {
+        //     host: env.VITE_HOST || "0.0.0.0",
+        //     port: 5173,
+        //     strictPort: true,
+        //     cors: env.VITE_CORS === "true",
+        //     watch: {
+        //         usePolling: true,
+        //         interval: 500,
+        //         ignored: ['**/node_modules/**', '**/.git/**'],
+        //     },
+        //     hmr: {
+        //         host: "localhost",
+        //     },
+        //     https: env.VITE_HTTPS === "true",
+        // },
     };
 });
