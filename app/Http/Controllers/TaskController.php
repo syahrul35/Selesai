@@ -258,6 +258,8 @@ class TaskController extends Controller
                 'completed_at' => $completedAt,
                 'is_late' => $isLate,
                 'late_reason' => $validated['late_reason'] ?? null,
+                'status_late_approval' => $isLate ? 'pending' : null,
+                'late_decline_reason' => null, // Reset reason if resubmitted
             ]);
 
             return back()->with([
@@ -273,6 +275,73 @@ class TaskController extends Controller
                     'message' => [
                         'type' => 'failed',
                         'message' => 'Failed to Confirm Task!' . $th
+                    ]
+                ]);
+        }
+    }
+
+    public function approve(Request $request, Task $task)
+    {
+        if ($task->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'action' => 'required|in:accept,decline',
+            'late_decline_reason' => 'required_if:action,decline|nullable|string|max:500',
+        ]);
+
+        try {
+            if ($validated['action'] === 'accept') {
+                $task->update([
+                    'status_late_approval' => 'approved',
+                ]);
+
+                // Create log entry
+                \Illuminate\Support\Facades\DB::table('task_logs')->insert([
+                    'task_id' => $task->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'update',
+                    'note' => 'Task late submission approved',
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $message = 'Task approval accepted!';
+            } else {
+                $task->update([
+                    'status' => 'pending',
+                    'status_late_approval' => 'declined',
+                    'late_decline_reason' => $validated['late_decline_reason'],
+                    'completed_at' => null,
+                ]);
+
+                // Create log entry
+                \Illuminate\Support\Facades\DB::table('task_logs')->insert([
+                    'task_id' => $task->id,
+                    'user_id' => Auth::id(),
+                    'type' => 'update',
+                    'note' => 'Task late submission declined. Reason: ' . $validated['late_decline_reason'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                $message = 'Task approval declined and returned to pending!';
+            }
+
+            return back()->with([
+                'message' => [
+                    'type' => 'success',
+                    'message' => $message
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            return redirect()
+                ->back()
+                ->with([
+                    'message' => [
+                        'type' => 'failed',
+                        'message' => 'Failed to process task approval! ' . $th->getMessage()
                     ]
                 ]);
         }

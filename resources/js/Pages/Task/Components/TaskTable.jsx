@@ -1,9 +1,12 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import LateTaskModal from "./LateTaskModal";
+import DeclineLateTaskModal from "./DeclineLateTaskModal";
 import { useState } from "react";
 
 export default function TaskTable({ tasks, onEdit }) {
     const { auth } = usePage().props;
+
+    console.log(tasks);
 
     const getStatusBadge = (status) => {
         switch (status) {
@@ -51,6 +54,10 @@ export default function TaskTable({ tasks, onEdit }) {
     const [showLateModal, setShowLateModal] = useState(false);
     const [taskToConfirm, setTaskToConfirm] = useState(null);
 
+    // late task approval state
+    const [showDeclineModal, setShowDeclineModal] = useState(false);
+    const [taskToApprove, setTaskToApprove] = useState(null);
+
     const isOverdue = (dueDate) => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -66,6 +73,17 @@ export default function TaskTable({ tasks, onEdit }) {
             // Jika tidak telat, langsung tembak route confirm
             router.post(route("tasks.confirm", task.id));
         }
+    };
+
+    const handleAcceptClick = (task) => {
+        router.post(route("tasks.approve", task.id), {
+            action: "accept",
+        });
+    };
+
+    const handleDeclineClick = (task) => {
+        setTaskToApprove(task);
+        setShowDeclineModal(true);
     };
 
     return (
@@ -132,12 +150,26 @@ export default function TaskTable({ tasks, onEdit }) {
                                     </td>
 
                                     {/* Status */}
-                                    <td className="px-4 py-2">
+                                    <td className="px-4 py-2 flex flex-col gap-1 items-start">
                                         <span
                                             className={`px-2 py-1 rounded text-sm ${getStatusBadge(task.status)}`}
                                         >
                                             {task.status}
                                         </span>
+                                        {task.is_late && (
+                                            <span className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded border border-red-200">
+                                                Late
+                                            </span>
+                                        )}
+                                        {task.is_late && task.status_late_approval && (
+                                            <span className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded border ${
+                                                task.status_late_approval === 'approved' ? 'text-green-600 bg-green-50 border-green-200' :
+                                                task.status_late_approval === 'declined' ? 'text-red-600 bg-red-50 border-red-200' :
+                                                'text-yellow-600 bg-yellow-50 border-yellow-200'
+                                            }`}>
+                                                Approval: {task.status_late_approval}
+                                            </span>
+                                        )}
                                     </td>
 
                                     {/* Priority */}
@@ -155,17 +187,13 @@ export default function TaskTable({ tasks, onEdit }) {
                                     </td>
 
                                     {/* Actions */}
-                                    {task.status !== "done" &&
-                                        task.user_id === auth.user.id && (
-                                            <td className="px-4 py-3">
-                                                <div className="flex items-center justify-between min-w-[120px]">
+                                    <td className="px-4 py-3">
+                                        <div className="flex items-center min-w-[120px]">
+                                            {task.status !== "done" && task.assigned_to === auth.user.id && (
+                                                <div className="flex items-center justify-between w-full">
                                                     {/* Tombol Done di Kiri */}
                                                     <button
-                                                        onClick={() =>
-                                                            handleDoneClick(
-                                                                task,
-                                                            )
-                                                        }
+                                                        onClick={() => handleDoneClick(task)}
                                                         className="px-4 py-2 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
                                                     >
                                                         Done
@@ -174,13 +202,10 @@ export default function TaskTable({ tasks, onEdit }) {
                                                     {/* Ikon Edit & Delete di Kanan (diberi gap) */}
                                                     <div className="flex items-center gap-3 ml-4">
                                                         <button
-                                                            onClick={() =>
-                                                                onEdit(task)
-                                                            }
+                                                            onClick={() => onEdit(task)}
                                                             className="text-amber-500 hover:text-amber-600 transition"
                                                             title="Edit Task"
                                                         >
-                                                            {/* Ganti dengan <PencilIcon className="w-5 h-5" /> jika pakai Heroicons */}
                                                             <svg
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 className="w-5 h-5"
@@ -191,9 +216,7 @@ export default function TaskTable({ tasks, onEdit }) {
                                                                 <path
                                                                     strokeLinecap="round"
                                                                     strokeLinejoin="round"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
+                                                                    strokeWidth={2}
                                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                                                                 />
                                                             </svg>
@@ -202,14 +225,10 @@ export default function TaskTable({ tasks, onEdit }) {
                                                         <Link
                                                             as="button"
                                                             method="delete"
-                                                            href={route(
-                                                                "tasks.destroy",
-                                                                task.id,
-                                                            )}
+                                                            href={route("tasks.destroy", task.id)}
                                                             className="text-red-600 hover:text-red-700 transition"
                                                             title="Delete Task"
                                                         >
-                                                            {/* Ganti dengan <TrashIcon className="w-5 h-5" /> jika pakai Heroicons */}
                                                             <svg
                                                                 xmlns="http://www.w3.org/2000/svg"
                                                                 className="w-5 h-5"
@@ -220,23 +239,39 @@ export default function TaskTable({ tasks, onEdit }) {
                                                                 <path
                                                                     strokeLinecap="round"
                                                                     strokeLinejoin="round"
-                                                                    strokeWidth={
-                                                                        2
-                                                                    }
+                                                                    strokeWidth={2}
                                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                                                 />
                                                             </svg>
                                                         </Link>
                                                     </div>
                                                 </div>
-                                            </td>
-                                        )}
+                                            )}
+
+                                            {task.status === "done" && task.is_late && task.status_late_approval === "pending" && task.user_id === auth.user.id && (
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleAcceptClick(task)}
+                                                        className="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold"
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeclineClick(task)}
+                                                        className="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold"
+                                                    >
+                                                        Decline
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
                                 <td
-                                    colSpan="6"
+                                    colSpan="8"
                                     className="px-4 py-6 text-center text-gray-500"
                                 >
                                     <div className="flex flex-col items-center gap-2">
@@ -257,6 +292,14 @@ export default function TaskTable({ tasks, onEdit }) {
                     show={showLateModal}
                     onClose={() => setShowLateModal(false)}
                     task={taskToConfirm}
+                />
+            )}
+
+            {taskToApprove && (
+                <DeclineLateTaskModal
+                    show={showDeclineModal}
+                    onClose={() => setShowDeclineModal(false)}
+                    task={taskToApprove}
                 />
             )}
         </div>

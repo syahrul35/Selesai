@@ -21,6 +21,8 @@ class Task extends Model
         'completed_at',
         'is_late',
         'late_reason',
+        'status_late_approval',
+        'late_decline_reason',
     ];
 
     protected $casts = [

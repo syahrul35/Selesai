@@ -2,10 +2,6 @@ import Calendar from '@/Components/Calendar';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, usePage, Link } from '@inertiajs/react';
 
-// =====================
-// Reusable Components
-// =====================
-
 function Badge({ children, color }) {
     const colors = {
         red: 'bg-red-100 text-red-700',

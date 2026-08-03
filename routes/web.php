@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     // import
     Route::post('/tasks/import', [TaskController::class, 'import'])->name('tasks.import');
     Route::post('/tasks/{task}/confirm', [TaskController::class, 'confirm'])->name('tasks.confirm');
+    Route::post('/tasks/{task}/approve', [TaskController::class, 'approve'])->name('tasks.approve');
 
     // collaboration
     Route::post('/projects/{project}/invite', [ProjectMemberController::class, 'invite'])->name('projects.invite');
