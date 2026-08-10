@@ -10,6 +10,8 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use Illuminate\Support\Facades\URL;
+
 class ScheduleNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -39,10 +41,13 @@ class ScheduleNotificationMail extends Mailable
      */
     public function content(): Content
     {
+        $actionUrl = URL::signedRoute('tasks.complete_via_email', ['task' => $this->task->id]);
+
         return new Content(
             view: 'emails.task_notification',
             with: [
                 'task' => $this->task,
+                'actionUrl' => $actionUrl,
             ],
         );
     }

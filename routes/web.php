@@ -43,4 +43,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/invites/{invite}/reject', [ProjectInviteController::class, 'reject'])->name('invites.reject');
 });
 
+// Email quick action (Signed URL)
+Route::get('/tasks/{task}/complete-via-email', [TaskController::class, 'completeViaEmail'])
+    ->name('tasks.complete_via_email')
+    ->middleware('signed');
+
+Route::post('/tasks/{task}/complete-via-email', [TaskController::class, 'submitCompleteViaEmail'])
+    ->name('tasks.submit_complete_via_email')
+    ->middleware('signed');
+
 require __DIR__.'/auth.php';

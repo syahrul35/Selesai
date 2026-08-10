@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -298,7 +299,7 @@ class TaskController extends Controller
                 ]);
 
                 // Create log entry
-                \Illuminate\Support\Facades\DB::table('task_logs')->insert([
+                DB::table('task_logs')->insert([
                     'task_id' => $task->id,
                     'user_id' => Auth::id(),
                     'type' => 'update',
@@ -317,7 +318,7 @@ class TaskController extends Controller
                 ]);
 
                 // Create log entry
-                \Illuminate\Support\Facades\DB::table('task_logs')->insert([
+                DB::table('task_logs')->insert([
                     'task_id' => $task->id,
                     'user_id' => Auth::id(),
                     'type' => 'update',
@@ -345,5 +346,114 @@ class TaskController extends Controller
                     ]
                 ]);
         }
+    }
+
+    public function completeViaEmail(Request $request, Task $task)
+    {
+        if ($task->status === 'done') {
+            return view('emails.task_completed', [
+                'task' => $task,
+                'alreadyDone' => true,
+            ]);
+        }
+
+        $completedAt = now();
+        $isLate = $completedAt->gt(Carbon::parse($task->due_at));
+
+        if ($isLate) {
+            return view('emails.task_late_reason', [
+                'task' => $task,
+            ]);
+        }
+
+        $task->update([
+            'status' => 'done',
+            'completed_at' => $completedAt,
+            'is_late' => false,
+            'late_reason' => null,
+            'status_late_approval' => null,
+            'late_decline_reason' => null,
+        ]);
+
+        try {
+            DB::table('task_logs')->insert([
+                'task_id' => $task->id,
+                'user_id' => $task->user_id,
+                'type' => 'update',
+                'note' => 'Task marked as done via Email notification link',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore if logging fails
+        }
+
+        // now I didn't used this features yet, maybe I will used it in the future
+        // return view('emails.task_completed', [
+        //     'task' => $task,
+        //     'alreadyDone' => false,
+        // ]);
+
+        $alreadyDone = false;
+
+        return back()->with([
+            'message' => [
+                'type' => 'success',
+                'message' => $alreadyDone ? 'Task already marked as done!' : 'Task marked as done successfully!'
+            ]
+        ]);
+    }
+
+    public function submitCompleteViaEmail(Request $request, Task $task)
+    {
+        if ($task->status === 'done') {
+            return view('emails.task_completed', [
+                'task' => $task,
+                'alreadyDone' => true,
+            ]);
+        }
+
+        $validated = $request->validate([
+            'late_reason' => 'required|string|max:500',
+        ]);
+
+        $completedAt = now();
+
+        $task->update([
+            'status' => 'done',
+            'completed_at' => $completedAt,
+            'is_late' => true,
+            'late_reason' => $validated['late_reason'],
+            'status_late_approval' => 'pending',
+            'late_decline_reason' => null,
+        ]);
+
+        try {
+            DB::table('task_logs')->insert([
+                'task_id' => $task->id,
+                'user_id' => $task->user_id,
+                'type' => 'update',
+                'note' => 'Task marked as done via Email link with late reason: ' . $validated['late_reason'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore if logging fails
+        }
+
+        // now I didn't used this features yet, maybe I will used it in the future
+        // return view('emails.task_completed', [
+        //     'task' => $task,
+        //     'alreadyDone' => false,
+        // ]);
+
+        $alreadyDone = false;
+
+        return back()->with([
+            'message' => [
+                'type' => 'success',
+                'message' => $alreadyDone ? 'Task already marked as done!' : 'Task marked as done successfully!'
+            ]
+        ]);
     }
 }
