@@ -27,14 +27,30 @@
         .icon {
             width: 64px;
             height: 64px;
-            background-color: #D1FAE5;
-            color: #059669;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 32px;
             margin: 0 auto 20px auto;
+        }
+        .icon-success {
+            background-color: #D1FAE5;
+            color: #059669;
+        }
+        .icon-pending {
+            background-color: #FEF3C7;
+            color: #D97706;
+        }
+        .badge-pending {
+            display: inline-block;
+            background-color: #FEF3C7;
+            color: #92400E;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
         }
         h1 {
             font-size: 22px;
@@ -73,14 +89,18 @@
 </head>
 <body>
     <div class="card">
-        <div class="icon">
-            ✓
-        </div>
         
         @if($alreadyDone)
+            <div class="icon icon-success">✓</div>
             <h1>Task already marked as done!</h1>
             <p>This task was previously marked as done.</p>
+        @elseif($isLate)
+            <div class="icon icon-pending">⏳</div>
+            <span class="badge-pending">⚠️ Pending Approval</span>
+            <h1>Task submitted, waiting for approval</h1>
+            <p>Your task has been marked as <strong>Done</strong>, but since it was submitted late, it is currently <strong>waiting for approval</strong> from the task creator.</p>
         @else
+            <div class="icon icon-success">✓</div>
             <h1>Task completed successfully!</h1>
             <p>The task status has been updated to <strong>Done</strong>.</p>
         @endif

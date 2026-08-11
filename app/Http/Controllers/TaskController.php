@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 
 class TaskController extends Controller
 {
@@ -106,6 +107,11 @@ class TaskController extends Controller
         try {
             // due at +9 hours from time_notif with Y-m-d\TH:i format
             $validate['due_at'] = Carbon::parse($validate['time_notif'])->addHours(9)->format('Y-m-d H:i:s');
+
+            // if assigned_to is null, then set assigned_to to user_id (creator)
+            if (is_null($validate['assigned_to'])) {
+                $validate['assigned_to'] = Auth::id();
+            }
 
             $validate['user_id'] = Auth::id();
             $validate['status'] = 'pending';
@@ -361,8 +367,10 @@ class TaskController extends Controller
         $isLate = $completedAt->gt(Carbon::parse($task->due_at));
 
         if ($isLate) {
+            $submitUrl = URL::signedRoute('tasks.submit_complete_via_email', ['task' => $task->id]);
             return view('emails.task_late_reason', [
                 'task' => $task,
+                'submitUrl' => $submitUrl,
             ]);
         }
 
@@ -385,22 +393,13 @@ class TaskController extends Controller
                 'updated_at' => now(),
             ]);
         } catch (\Throwable $e) {
-            // Ignore if logging fails
+            
         }
 
-        // now I didn't used this features yet, maybe I will used it in the future
-        // return view('emails.task_completed', [
-        //     'task' => $task,
-        //     'alreadyDone' => false,
-        // ]);
-
-        $alreadyDone = false;
-
-        return back()->with([
-            'message' => [
-                'type' => 'success',
-                'message' => $alreadyDone ? 'Task already marked as done!' : 'Task marked as done successfully!'
-            ]
+        return view('emails.task_completed', [
+            'task' => $task,
+            'alreadyDone' => false,
+            'isLate' => false,
         ]);
     }
 
@@ -441,19 +440,10 @@ class TaskController extends Controller
             // Ignore if logging fails
         }
 
-        // now I didn't used this features yet, maybe I will used it in the future
-        // return view('emails.task_completed', [
-        //     'task' => $task,
-        //     'alreadyDone' => false,
-        // ]);
-
-        $alreadyDone = false;
-
-        return back()->with([
-            'message' => [
-                'type' => 'success',
-                'message' => $alreadyDone ? 'Task already marked as done!' : 'Task marked as done successfully!'
-            ]
+        return view('emails.task_completed', [
+            'task' => $task,
+            'alreadyDone' => false,
+            'isLate' => true,
         ]);
     }
 }

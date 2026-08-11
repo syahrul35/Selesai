@@ -122,7 +122,7 @@
             <span style="color: #6b7280; font-size: 13px;">Due Date: {{ \Carbon\Carbon::parse($task->due_at)->format('d M Y, H:i') }}</span>
         </div>
 
-        <form method="POST" action="{{ request()->fullUrl() }}">
+        <form method="POST" action="{{ $submitUrl }}">
             @csrf
             <div class="form-group">
                 <label for="late_reason">Reason for Late <span style="color: #dc2626;">*</span></label>
