@@ -316,11 +316,14 @@ class TaskController extends Controller
 
                 $message = 'Task approval accepted!';
             } else {
+                $now = now();
                 $task->update([
                     'status' => 'pending',
                     'status_late_approval' => 'declined',
                     'late_decline_reason' => $validated['late_decline_reason'],
                     'completed_at' => null,
+                    'time_notif' => $now->format('Y-m-d H:i:s'),
+                    'due_at' => $now->copy()->addHours(9)->format('Y-m-d H:i:s'),
                 ]);
 
                 // Create log entry

@@ -1,6 +1,6 @@
 import { Link, router, usePage } from "@inertiajs/react";
 import LateTaskModal from "./LateTaskModal";
-import DeclineLateTaskModal from "./DeclineLateTaskModal";
+import LateApprovalModal from "./LateApprovalModal";
 import { useState } from "react";
 
 export default function TaskTable({ tasks, onEdit }) {
@@ -54,9 +54,9 @@ export default function TaskTable({ tasks, onEdit }) {
     const [showLateModal, setShowLateModal] = useState(false);
     const [taskToConfirm, setTaskToConfirm] = useState(null);
 
-    // late task approval state
-    const [showDeclineModal, setShowDeclineModal] = useState(false);
-    const [taskToApprove, setTaskToApprove] = useState(null);
+    // late task approval modal state
+    const [showApprovalModal, setShowApprovalModal] = useState(false);
+    const [taskToReview, setTaskToReview] = useState(null);
 
     const isOverdue = (dueDate) => {
         const today = new Date();
@@ -75,15 +75,9 @@ export default function TaskTable({ tasks, onEdit }) {
         }
     };
 
-    const handleAcceptClick = (task) => {
-        router.post(route("tasks.approve", task.id), {
-            action: "accept",
-        });
-    };
-
-    const handleDeclineClick = (task) => {
-        setTaskToApprove(task);
-        setShowDeclineModal(true);
+    const handleReviewClick = (task) => {
+        setTaskToReview(task);
+        setShowApprovalModal(true);
     };
 
     return (
@@ -249,20 +243,12 @@ export default function TaskTable({ tasks, onEdit }) {
                                             )}
 
                                             {task.status === "done" && task.is_late && task.status_late_approval === "pending" && task.user_id === auth.user.id && (
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => handleAcceptClick(task)}
-                                                        className="px-3 py-1.5 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold"
-                                                    >
-                                                        Accept
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDeclineClick(task)}
-                                                        className="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold"
-                                                    >
-                                                        Decline
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={() => handleReviewClick(task)}
+                                                    className="px-3 py-1.5 text-xs bg-amber-500 text-white rounded hover:bg-amber-600 transition font-semibold"
+                                                >
+                                                    Tinjau
+                                                </button>
                                             )}
                                         </div>
                                     </td>
@@ -295,11 +281,11 @@ export default function TaskTable({ tasks, onEdit }) {
                 />
             )}
 
-            {taskToApprove && (
-                <DeclineLateTaskModal
-                    show={showDeclineModal}
-                    onClose={() => setShowDeclineModal(false)}
-                    task={taskToApprove}
+            {taskToReview && (
+                <LateApprovalModal
+                    show={showApprovalModal}
+                    onClose={() => setShowApprovalModal(false)}
+                    task={taskToReview}
                 />
             )}
         </div>
