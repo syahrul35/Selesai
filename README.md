@@ -1,61 +1,169 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 Selesai — Project & Task Management Platform
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
 </p>
 
-## About Laravel
+<p align="center">
+  <a href="#"><img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 12"></a>
+  <a href="#"><img src="https://img.shields.io/badge/React-18.x-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 18"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Inertia.js-2.0-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Tailwind_CSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS"></a>
+  <a href="#"><img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License"></a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📌 Overview
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**Selesai** is a modern, intuitive project and task management web application designed to help teams collaborate seamlessly, track task progress, handle deadline exceptions, and streamline workflows.
 
-## Learning Laravel
+Powered by **Laravel 12**, **Inertia.js**, **React 18**, and **Tailwind CSS**, Selesai combines the full-stack power of Laravel with a fluid Single-Page Application (SPA) user interface.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ✨ Key Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- 📂 **Project Management & Collaboration**
+  - Create and manage projects.
+  - Invite team members via project invitations.
+  - Manage member roles, accept or reject project invites, and remove members when necessary.
 
-## Laravel Sponsors
+- 📋 **Comprehensive Task Tracking**
+  - Assign tasks to specific team members with priorities, due dates, and detailed descriptions.
+  - Real-time status updates and progress tracking.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- ⏳ **Late Submission & Approval Workflow**
+  - Automatic detection of overdue tasks (`is_late`).
+  - Team members can submit reasons for delay (`late_reason`).
+  - Project managers/leads can review, approve, or decline late task completion requests with feedback.
 
-### Premium Partners
+- 📧 **Quick Action via Signed Email Links**
+  - Complete tasks directly from email notifications via secure Laravel **Signed URLs** without needing to log in manually.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- 📊 **Bulk Excel Task Import**
+  - Effortlessly import lists of tasks from spreadsheet files (`.xlsx`, `.csv`) using `maatwebsite/excel`.
 
-## Contributing
+- 🔔 **Task Reminders & Notifications**
+  - Timed notifications (`time_notif`) and tracking to ensure deadline awareness.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- 🖥️ **Modern & Responsive UI**
+  - Dynamic interactive views built with **Inertia.js React** and styled with **Tailwind CSS** and **Headless UI**.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🛠️ Tech Stack
 
-## Security Vulnerabilities
+### **Backend**
+- **Framework**: [Laravel 12](https://laravel.com)
+- **Language**: PHP 8.2+
+- **Authentication**: Laravel Breeze & Sanctum
+- **Database**: SQLite / MySQL / PostgreSQL (managed via Doctrine DBAL)
+- **Excel Processor**: `maatwebsite/excel`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### **Frontend**
+- **Framework**: [React 18](https://react.dev) via [Inertia.js 2.0](https://inertiajs.com)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com) & Headless UI
+- **Build Tool**: [Vite 7](https://vitejs.dev)
+- **Route Helper**: `tightenco/ziggy`
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🚀 Getting Started
+
+Follow these steps to get a local development environment up and running.
+
+### **Prerequisites**
+- **PHP**: `>= 8.2`
+- **Composer**: `>= 2.x`
+- **Node.js**: `>= 18.x` & **npm**
+
+### **Installation**
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/syahrul35/Selesai.git
+   cd Selesai
+   ```
+
+2. **Install Backend Dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Frontend Dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Run Migrations & Seeders**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Start the Development Environment**
+   Selesai provides a unified `composer dev` script that starts the Laravel server, queue listener, log viewer (Pail), and Vite dev server simultaneously using `concurrently`:
+   ```bash
+   composer run dev
+   ```
+
+   Alternatively, you can run the services separately:
+   ```bash
+   # Terminal 1: Laravel Web Server
+   php artisan serve
+
+   # Terminal 2: Vite Dev Server
+   npm run dev
+
+   # Terminal 3: Queue Listener
+   php artisan queue:listen
+   ```
+
+7. **Access the Application**
+   Open your browser and navigate to:
+   ```
+   http://localhost:8000
+   ```
+
+---
+
+## 🧪 Running Tests
+
+To execute the automated test suite powered by PHPUnit:
+
+```bash
+composer run test
+```
+
+---
+
+## 📜 Folder Structure Highlights
+
+```
+Selesai/
+├── app/
+│   ├── Http/Controllers/    # Dashboard, Project, Task, Invite, & Profile Controllers
+│   ├── Models/              # User, Project, Task, Schedule Models
+│   └── Imports/             # Excel import handlers
+├── database/
+│   ├── migrations/          # Schema migrations for projects, tasks, invites
+│   └── seeders/             # Database seeders
+├── resources/
+│   └── js/                  # Inertia React components & pages
+├── routes/
+│   ├── web.php              # Web routes & signed URL email handlers
+│   └── auth.php             # Breeze authentication routes
+└── vite.config.js           # Vite configuration
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
