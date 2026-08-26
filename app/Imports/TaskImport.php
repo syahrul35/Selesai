@@ -17,23 +17,28 @@ class TaskImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
-        // Handle due_at (Excel bisa kirim angka)
-        $dueDate = isset($row['due_at'])
-            ? Carbon::parse($row['due_at'])->format('Y-m-d')
-            : null;
+        // Handle time_notif (normalize to datetime/timestamp)
+        $timeNotifRaw = $row['time_notif'] ?? null;
+        if ($timeNotifRaw) {
+            if (is_numeric($timeNotifRaw)) {
+                $timeNotif = Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($timeNotifRaw));
+            } else {
+                $timeNotif = Carbon::parse($timeNotifRaw);
+            }
+        } else {
+            $timeNotif = now()->setTime(18, 0, 0);
+        }
 
-        // Handle time_notif (normalize ke H:i:s)
-        $timeNotif = isset($row['time_notif'])
-            ? Carbon::parse($row['time_notif'])->format('H:i:s')
-            : '18:00:00';
+        // due_at is automatically +9 hours from time_notif
+        $dueAt = (clone $timeNotif)->addHours(9);
 
         return new Task([
             'user_id'     => Auth::id(),
             'title'       => $row['title'] ?? 'Untitled Task',
             'project_id'  => $row['project_id'] ?? null,
-            'assigned_to' => $row['assigned_to'] ?? null,
-            'due_at'    => $dueDate,
-            'time_notif'  => $timeNotif,
+            'assigned_to' => $row['assigned_to'] ?? Auth::id(),
+            'due_at'      => $dueAt->format('Y-m-d H:i:s'),
+            'time_notif'  => $timeNotif->format('Y-m-d H:i:s'),
             'priority'    => $row['priority'] ?? 'medium',
             'status'      => $row['status'] ?? 'pending',
             'is_notified' => $row['is_notified'] ?? false,

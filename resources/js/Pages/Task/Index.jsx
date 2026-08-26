@@ -5,12 +5,14 @@ import TaskHeader from "./Components/TaskHeader";
 import TaskFilter from "./Components/TaskFilter";
 import TaskTable from "./Components/TaskTable";
 import TaskModal from "./Components/TaskModal";
+import TaskImportModal from "./Components/TaskImportModal";
 import Calendar from "@/Components/Calendar";
 
 export default function Task() {
     const { tasks, projects, filters, month, year, todayTasks } = usePage().props;
 
     const [showModal, setShowModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
 
     return (
@@ -32,6 +34,7 @@ export default function Task() {
                                     setSelectedTask(null);
                                     setShowModal(true);
                                 }}
+                                onImportClick={() => setShowImportModal(true)}
                             />
                             
                             <TaskFilter
@@ -66,12 +69,17 @@ export default function Task() {
                                 ))}
                             </div>
 
-                            {/* Modal */}
+                            {/* Modals */}
                             <TaskModal
                                 show={showModal}
                                 onClose={() => setShowModal(false)}
                                 task={selectedTask}
                                 projects={projects}
+                            />
+
+                            <TaskImportModal
+                                show={showImportModal}
+                                onClose={() => setShowImportModal(false)}
                             />
 
                             {/* Calendar */}
@@ -85,3 +93,4 @@ export default function Task() {
         </AuthenticatedLayout>
     );
 }
+

@@ -241,7 +241,7 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with([
             'message' => [
                 'type' => 'success',
-                'message' => 'Data berhasil diimport!'
+                'message' => 'Data successfully imported!'
             ]
         ]);
     }
