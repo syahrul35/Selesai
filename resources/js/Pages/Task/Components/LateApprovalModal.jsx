@@ -43,7 +43,7 @@ export default function LateApprovalModal({ show, onClose, task }) {
                 <div className="flex items-start justify-between mb-4">
                     <div>
                         <h2 className="text-lg font-bold text-gray-800">
-                            Tinjau Keterlambatan Task
+                            Review Late Task
                         </h2>
                         <p className="text-sm text-gray-500 mt-0.5">{task.title}</p>
                     </div>
@@ -59,17 +59,17 @@ export default function LateApprovalModal({ show, onClose, task }) {
                 {/* Late Reason */}
                 <div className="mb-5">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                        Alasan Keterlambatan
+                        Late Reason
                     </p>
                     <div className="bg-red-50 border border-red-200 rounded px-4 py-3 text-sm text-gray-700 min-h-[60px]">
                         {task.late_reason
                             ? task.late_reason
-                            : <span className="text-gray-400 italic">Tidak ada alasan yang diisi.</span>
+                            : <span className="text-gray-400 italic">No reason provided.</span>
                         }
                     </div>
                 </div>
 
-                {/* Step: Review — tampilkan dua tombol */}
+                {/* Step: Review — show two buttons */}
                 {step === "review" && (
                     <div className="flex gap-2 justify-end">
                         <button
@@ -77,7 +77,7 @@ export default function LateApprovalModal({ show, onClose, task }) {
                             onClick={handleClose}
                             className="px-4 py-2 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition"
                         >
-                            Batal
+                            Cancel
                         </button>
                         <button
                             type="button"
@@ -87,7 +87,7 @@ export default function LateApprovalModal({ show, onClose, task }) {
                             }}
                             className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold"
                         >
-                            Tolak
+                            Decline
                         </button>
                         <button
                             type="button"
@@ -95,23 +95,23 @@ export default function LateApprovalModal({ show, onClose, task }) {
                             disabled={processing}
                             className="px-4 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition font-semibold"
                         >
-                            {processing ? "Processing..." : "Setujui"}
+                            {processing ? "Processing..." : "Approve"}
                         </button>
                     </div>
                 )}
 
-                {/* Step: Decline — tampilkan input alasan penolakan */}
+                {/* Step: Decline — show decline reason */}
                 {step === "decline" && (
                     <form onSubmit={handleDeclineSubmit} className="space-y-4">
                         <div>
                             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1 block">
-                                Alasan Penolakan
+                                Decline Reason
                             </label>
                             <textarea
                                 required
                                 rows="3"
                                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-300"
-                                placeholder="Tulis alasan penolakan..."
+                                placeholder="Write decline reason..."
                                 value={data.late_decline_reason}
                                 onChange={(e) =>
                                     setData("late_decline_reason", e.target.value)
@@ -124,14 +124,14 @@ export default function LateApprovalModal({ show, onClose, task }) {
                                 onClick={() => setStep("review")}
                                 className="px-4 py-2 text-sm bg-gray-100 text-gray-600 rounded hover:bg-gray-200 transition"
                             >
-                                Kembali
+                                Back
                             </button>
                             <button
                                 type="submit"
                                 disabled={processing}
                                 className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold"
                             >
-                                {processing ? "Processing..." : "Kirim Penolakan"}
+                                {processing ? "Processing..." : "Send Rejection"}
                             </button>
                         </div>
                     </form>

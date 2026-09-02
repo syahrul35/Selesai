@@ -22,17 +22,17 @@ export default function DeclineLateTaskModal({ show, onClose, task }) {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6">
                 <h2 className="text-lg font-bold mb-4 text-red-600">
-                    Tolak Penyelesaian Task
+                    Reject Task Completion
                 </h2>
                 <p className="text-sm text-gray-600 mb-4">
-                    Mohon isi alasan mengapa Anda menolak penyelesaian task terlambat ini:
+                    Please fill in the reason why you rejected this late task completion:
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <textarea
                         required
                         className="w-full border rounded px-3 py-2 text-sm"
                         rows="3"
-                        placeholder="Tulis alasan penolakan..."
+                        placeholder="Write the reason for rejection..."
                         value={data.late_decline_reason}
                         onChange={(e) => setData("late_decline_reason", e.target.value)}
                     />
@@ -42,14 +42,14 @@ export default function DeclineLateTaskModal({ show, onClose, task }) {
                             onClick={onClose}
                             className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
                         >
-                            Batal
+                            Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={processing}
                             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
                         >
-                            {processing ? 'Processing...' : 'Tolak Task'}
+                            {processing ? 'Processing...' : 'Decline Task'}
                         </button>
                     </div>
                 </form>
