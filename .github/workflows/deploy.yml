@@ -21,8 +21,13 @@ jobs:
           key: ${{ secrets.VPS_KEY }}
           script: |
             cd /var/www/Selesai
-            git pull origin main
+
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
+
             rm -rf public/build
             docker compose run --rm node sh -c "npm install && npm run build"
+
             docker compose down
             docker compose up -d --build
