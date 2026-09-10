@@ -102,7 +102,8 @@ export default function TaskTable({
     // Resolve assigned user name — support both eager-loaded relation and userMap
     const getAssigneeName = (task) => {
         if (task.assigned_user?.name) return task.assigned_user.name;
-        if (userMap[task.assigned_to]?.name) return userMap[task.assigned_to].name;
+        if (userMap[task.assigned_to]?.name)
+            return userMap[task.assigned_to].name;
         return null;
     };
 
@@ -131,7 +132,10 @@ export default function TaskTable({
                                 const assigneeName = getAssigneeName(task);
 
                                 return (
-                                    <tr key={task.id} className="hover:bg-gray-50 transition">
+                                    <tr
+                                        key={task.id}
+                                        className="hover:bg-gray-50 transition"
+                                    >
                                         {/* Title */}
                                         <td className="px-4 py-2">
                                             {task.title}
@@ -169,10 +173,12 @@ export default function TaskTable({
                                         >
                                             {new Date(
                                                 task.due_at,
-                                            ).toLocaleDateString("id-ID", {
+                                            ).toLocaleString("id-ID", {
                                                 year: "numeric",
-                                                month: "short",
+                                                month: "numeric",
                                                 day: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit",
                                             })}
                                         </td>
 
@@ -182,7 +188,10 @@ export default function TaskTable({
                                                 <span
                                                     className={`px-2 py-1 rounded text-sm ${getStatusBadge(task.status)}`}
                                                 >
-                                                    {task.status.replace("_", " ")}
+                                                    {task.status.replace(
+                                                        "_",
+                                                        " ",
+                                                    )}
                                                 </span>
                                                 {task.is_late && (
                                                     <span className="text-[10px] font-semibold text-red-600 bg-red-50 px-1.5 py-0.5 rounded border border-red-200">
@@ -231,18 +240,27 @@ export default function TaskTable({
                                                 {mode === "project" ? (
                                                     /* Project mode: owner → Edit+Delete, member → Done */
                                                     <>
-                                                        {task.status !== "done" && (
+                                                        {task.status !==
+                                                            "done" && (
                                                             <>
                                                                 {isOwner ? (
                                                                     <>
                                                                         <button
                                                                             className="px-3 py-1.5 text-xs bg-amber-500 text-white rounded hover:bg-amber-600 transition font-semibold"
-                                                                            onClick={() => onEdit(task)}
+                                                                            onClick={() =>
+                                                                                onEdit(
+                                                                                    task,
+                                                                                )
+                                                                            }
                                                                         >
                                                                             Edit
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => onDelete(task.id)}
+                                                                            onClick={() =>
+                                                                                onDelete(
+                                                                                    task.id,
+                                                                                )
+                                                                            }
                                                                             className="px-3 py-1.5 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition font-semibold"
                                                                         >
                                                                             Delete
@@ -251,7 +269,11 @@ export default function TaskTable({
                                                                 ) : (
                                                                     isMyTask && (
                                                                         <button
-                                                                            onClick={() => handleDoneClick(task)}
+                                                                            onClick={() =>
+                                                                                handleDoneClick(
+                                                                                    task,
+                                                                                )
+                                                                            }
                                                                             className="px-4 py-2 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
                                                                         >
                                                                             Done
@@ -260,12 +282,20 @@ export default function TaskTable({
                                                                 )}
                                                             </>
                                                         )}
-                                                        {task.status === "done" &&
+                                                        {task.status ===
+                                                            "done" &&
                                                             task.is_late &&
-                                                            task.status_late_approval === "pending" &&
-                                                            task.user_id === auth.user.id && (
+                                                            task.status_late_approval ===
+                                                                "pending" &&
+                                                            task.user_id ===
+                                                                auth.user
+                                                                    .id && (
                                                                 <button
-                                                                    onClick={() => handleReviewClick(task)}
+                                                                    onClick={() =>
+                                                                        handleReviewClick(
+                                                                            task,
+                                                                        )
+                                                                    }
                                                                     className="px-3 py-1.5 text-xs bg-amber-500 text-white rounded hover:bg-amber-600 transition font-semibold"
                                                                 >
                                                                     Tinjau
@@ -275,12 +305,19 @@ export default function TaskTable({
                                                 ) : (
                                                     /* All mode: assigned user → Done + Edit + Delete */
                                                     <div className="flex items-center min-w-[120px]">
-                                                        {task.status !== "done" &&
-                                                            task.assigned_to === auth.user.id && (
+                                                        {task.status !==
+                                                            "done" &&
+                                                            task.assigned_to ===
+                                                                auth.user
+                                                                    .id && (
                                                                 <div className="flex items-center justify-between w-full">
                                                                     {/* Tombol Done di Kiri */}
                                                                     <button
-                                                                        onClick={() => handleDoneClick(task)}
+                                                                        onClick={() =>
+                                                                            handleDoneClick(
+                                                                                task,
+                                                                            )
+                                                                        }
                                                                         className="px-4 py-2 text-xs bg-green-600 text-white rounded hover:bg-green-700 transition"
                                                                     >
                                                                         Done
@@ -289,7 +326,11 @@ export default function TaskTable({
                                                                     {/* Ikon Edit & Delete di Kanan (diberi gap) */}
                                                                     <div className="flex items-center gap-3 ml-4">
                                                                         <button
-                                                                            onClick={() => onEdit(task)}
+                                                                            onClick={() =>
+                                                                                onEdit(
+                                                                                    task,
+                                                                                )
+                                                                            }
                                                                             className="text-amber-500 hover:text-amber-600 transition"
                                                                             title="Edit Task"
                                                                         >
@@ -303,7 +344,9 @@ export default function TaskTable({
                                                                                 <path
                                                                                     strokeLinecap="round"
                                                                                     strokeLinejoin="round"
-                                                                                    strokeWidth={2}
+                                                                                    strokeWidth={
+                                                                                        2
+                                                                                    }
                                                                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                                                                                 />
                                                                             </svg>
@@ -312,7 +355,10 @@ export default function TaskTable({
                                                                         <Link
                                                                             as="button"
                                                                             method="delete"
-                                                                            href={route("tasks.destroy", task.id)}
+                                                                            href={route(
+                                                                                "tasks.destroy",
+                                                                                task.id,
+                                                                            )}
                                                                             className="text-red-600 hover:text-red-700 transition"
                                                                             title="Delete Task"
                                                                         >
@@ -326,7 +372,9 @@ export default function TaskTable({
                                                                                 <path
                                                                                     strokeLinecap="round"
                                                                                     strokeLinejoin="round"
-                                                                                    strokeWidth={2}
+                                                                                    strokeWidth={
+                                                                                        2
+                                                                                    }
                                                                                     d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                                                                 />
                                                                             </svg>
@@ -335,12 +383,20 @@ export default function TaskTable({
                                                                 </div>
                                                             )}
 
-                                                        {task.status === "done" &&
+                                                        {task.status ===
+                                                            "done" &&
                                                             task.is_late &&
-                                                            task.status_late_approval === "pending" &&
-                                                            task.user_id === auth.user.id && (
+                                                            task.status_late_approval ===
+                                                                "pending" &&
+                                                            task.user_id ===
+                                                                auth.user
+                                                                    .id && (
                                                                 <button
-                                                                    onClick={() => handleReviewClick(task)}
+                                                                    onClick={() =>
+                                                                        handleReviewClick(
+                                                                            task,
+                                                                        )
+                                                                    }
                                                                     className="px-3 py-1.5 text-xs bg-amber-500 text-white rounded hover:bg-amber-600 transition font-semibold"
                                                                 >
                                                                     Tinjau
