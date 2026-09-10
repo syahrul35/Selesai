@@ -42,6 +42,52 @@ class TaskController extends Controller
         // Calendar reference (clone biar tidak bentrok)
         $calendarTasks = (clone $baseQuery);
 
+        // Tentukan halaman awal berdasarkan task hari ini
+        if (!$request->has('page')) {
+            $todayTask = (clone $baseQuery)
+                ->whereBetween('due_at', [$start, $end])
+                ->whereDate('due_at', '>=', $today)
+                ->when($projectId === 'no_project', function ($query) {
+                    $query->whereNull('project_id');
+                })
+                ->when($projectId && $projectId !== 'no_project', function ($query) use ($projectId) {
+                    $query->where('project_id', $projectId);
+                })
+                ->orderBy('due_at')
+                ->orderBy('time_notif')
+                ->first();
+
+            $initialPage = 1;
+
+            if ($todayTask) {
+                $position = (clone $baseQuery)
+                    ->whereBetween('due_at', [$start, $end])
+                    ->when($projectId === 'no_project', function ($query) {
+                        $query->whereNull('project_id');
+                    })
+                    ->when($projectId && $projectId !== 'no_project', function ($query) use ($projectId) {
+                        $query->where('project_id', $projectId);
+                    })
+                    ->where(function ($query) use ($todayTask) {
+                        $query->where('due_at', '<', $todayTask->due_at)
+                            ->orWhere(function ($query) use ($todayTask) {
+                                $query->where('due_at', $todayTask->due_at)
+                                    ->where('time_notif', '<', $todayTask->time_notif);
+                            });
+                    })
+                    ->count();
+
+                $initialPage = (int) floor($position / 10) + 1;
+            }
+
+            if ($initialPage > 1) {
+                return redirect()->route('tasks.index', array_merge(
+                    $request->query(),
+                    ['page' => $initialPage]
+                ));
+            }
+        }
+
         // Main tasks (list + filter)
         $tasks = (clone $baseQuery)
             ->whereBetween('due_at', [$start, $end])
