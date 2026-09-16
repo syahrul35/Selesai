@@ -34,8 +34,7 @@ class SendScheduleNotifications extends Command
         $this->info("Running command at: " . $now);
 
         $tasks = Task::where('is_notified', false)
-            ->whereDate('due_at', $now->toDateString())
-            ->whereTime('time_notif', '<=', $now->toTimeString())
+            ->where('time_notif', '<=', $now)
             ->with('user', 'assignedUser')
             ->get();
 
